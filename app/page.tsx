@@ -1,4 +1,3 @@
-import {   WalletButton } from "@/components/wallet/wallet-connect-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/social/post-card";
@@ -65,16 +64,6 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gradient">SonicClout</h1>
-        </div>
-        <WalletButton />
-      </header>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <GlassCard className="p-4">
@@ -84,7 +73,7 @@ export default function Home() {
                 <span className="text-white font-bold">?</span>
               </div>
               <div className="flex-1">
-                <textarea 
+                <textarea
                   className="w-full bg-white/5 border border-white/10 rounded-md p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="What's happening in the Solana ecosystem?"
                   rows={3}
@@ -104,8 +93,8 @@ export default function Home() {
                       Clip
                     </Button>
                   </div>
-                  <Button 
-                    variant="glassColored" 
+                  <Button
+                    variant="glassColored"
                     gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
                   >
                     Post
@@ -161,8 +150,8 @@ export default function Home() {
                 <div className="text-xs text-gray-400 mt-1">Unlock 30% $SONIC at 50K views</div>
               </div>
 
-              <Button 
-                variant="glassColored" 
+              <Button
+                variant="glassColored"
                 gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
                 className="w-full"
               >
@@ -181,7 +170,7 @@ export default function Home() {
                 </div>
                 <Button variant="glass" size="sm">Trade</Button>
               </div>
-              
+
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center">
                 <div>
                   <div className="font-medium">Clip Shares</div>
@@ -189,7 +178,7 @@ export default function Home() {
                 </div>
                 <Button variant="glass" size="sm">Trade</Button>
               </div>
-              
+
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center">
                 <div>
                   <div className="font-medium">Viral Posts</div>
