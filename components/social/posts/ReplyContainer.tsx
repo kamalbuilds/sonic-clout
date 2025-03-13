@@ -7,23 +7,34 @@ import React, { useState } from 'react';
 import { CgProfile } from "react-icons/cg";
 import { useOrbis } from "@orbisclub/components";
 
-const ReplyContainer = ({ post }: { post: Post }) => {
+const ReplyContainer = ({ post, getReplies }: { post: Post, getReplies: (id: string) => Promise<void> }) => {
     const { orbis } = useOrbis()
 
     const [replyMessage, setReplyMessage] = useState('');
+    const [sendingReply, setSendingReply] = useState(false);
 
     const handleReply = async () => {
         try {
-            console.log("replied", post.stream_id, replyMessage);
+            setSendingReply(true);
 
             const res = await orbis.createPost({
                 body: replyMessage,
+                context: post.stream_id,
                 reply_to: post.stream_id
             })
 
             console.log("Res", res);
+
+            if (res.status == 200) {
+                setTimeout(() => {
+                    setSendingReply(false);
+                    getReplies(post.stream_id)
+                }, 3000);
+            }
+
         } catch (error) {
-            console.log("Error", error);
+            setSendingReply(false);
+            console.log("Error in sending reply", error);
 
         }
 
@@ -43,7 +54,9 @@ const ReplyContainer = ({ post }: { post: Post }) => {
                     onChange={(e) => setReplyMessage(e.target.value)}
                 />
                 <div className='flex justify-end'>
-                    <Button onClick={handleReply}>Comment</Button>
+                    <Button disabled={sendingReply} onClick={handleReply}>
+                        {sendingReply ? 'Replying' : 'Comment'}
+                    </Button>
                 </div>
             </div>
 

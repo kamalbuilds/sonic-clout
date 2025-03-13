@@ -6,6 +6,8 @@ import { ORBIS_CONTEXT } from '@/constants';
 import { LoadingCircle } from '@/components/LoadingCircle';
 import { Post } from '@/types';
 import PostContainer from './PostContainer';
+import { GlassCard } from '@/components/ui/glass-card';
+import ReplyContainer from './ReplyContainer';
 
 const Posts = () => {
 
@@ -13,6 +15,8 @@ const Posts = () => {
     const { orbis, user } = useOrbis();
     const [posts, setPosts] = useState<Post[] | []>([]);
     const [error, setError] = useState();
+
+    const [selectedPostToReply, setSelectedPostToReply] = useState<Post | null>(null)
 
     const loadPosts = async () => {
         setIsLoading(true);
@@ -75,7 +79,14 @@ const Posts = () => {
             ) : (
                 <>
                     {posts.map((post: Post) => (
-                        <PostContainer post={post} key={post.stream_id} />
+                        <GlassCard
+                            variant="default"
+                            hover="scale"
+                            className={`overflow-hidden`}
+                            key={post.stream_id}
+                        >
+                            <PostContainer post={post} />
+                        </GlassCard>
                     ))}
                     {samplePosts.map((post) => (
                         <PostCard key={post.id} {...post} />
