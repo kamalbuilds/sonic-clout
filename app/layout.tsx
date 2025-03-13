@@ -4,6 +4,8 @@ import "./globals.css";
 import { WalletProvider } from "@/components/wallet/wallet-provider";
 import { NetworkProvider } from "@/context/NetworkContext";
 import { ToastProvider } from "@/components/ToastProvider";
+import Navbar from "@/components/Navbar";
+import Providers from "./Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,17 +27,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NetworkProvider>
-          <WalletProvider>
-          <ToastProvider />
-            {children}
-          </WalletProvider>
-        </NetworkProvider>
+        <Providers>
+          <NetworkProvider>
+            <WalletProvider>
+              <ToastProvider />
+              <Navbar />
+              {children}
+            </WalletProvider>
+          </NetworkProvider>
+        </Providers>
       </body>
     </html>
   );
