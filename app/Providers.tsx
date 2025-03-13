@@ -3,6 +3,7 @@
 import React, { ReactNode } from 'react';
 import { Orbis, OrbisProvider } from "@orbisclub/components";
 import "@orbisclub/components/dist/index.modern.css";
+import GlobalContextProvider from '@/context/GlobalContext';
 
 const Providers = ({ children }: { children: ReactNode }) => {
 
@@ -12,9 +13,11 @@ const Providers = ({ children }: { children: ReactNode }) => {
     });
 
     return (
-        <OrbisProvider defaultOrbis={orbis}>
-            {children}
-        </OrbisProvider>
+        <GlobalContextProvider>
+            <OrbisProvider defaultOrbis={orbis}>
+                {children}
+            </OrbisProvider>
+        </GlobalContextProvider>
     );
 };
 
