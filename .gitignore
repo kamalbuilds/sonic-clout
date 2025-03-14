@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+app/lib/contracts/**
+app/lib/contracts-artifacts/**
+app/lib/contracts-types/**
+app/lib/contracts-types-artifacts/**
+app/lib/contracts-types-types/**
+app/lib/contracts-types-types-artifacts/**
+app/lib/contracts-types-types-types/**

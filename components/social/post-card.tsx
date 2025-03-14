@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GlassCard } from '../ui/glass-card';
 import { Button } from '../ui/button';
 import { formatAddress } from '../ui/utils';
+import { TokenizeContent } from './tokenize-content';
 
 export interface PostCardProps {
   id: string;
@@ -38,6 +39,16 @@ export const PostCard: React.FC<PostCardProps> = ({
   tokenSymbol,
   className,
 }) => {
+  const [showTokenizeModal, setShowTokenizeModal] = useState(false);
+  const [tokenAddress, setTokenAddress] = useState<string | null>(null);
+  
+  const handleTokenizeSuccess = (address: string) => {
+    setTokenAddress(address);
+    setShowTokenizeModal(false);
+    // Update post to show it's now tokenized
+    // In a real implementation, you would update the post in your backend
+  };
+
   const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -126,12 +137,30 @@ export const PostCard: React.FC<PostCardProps> = ({
               </button>
             </div>
             
-            {!tokenized && (
-              <Button variant="glass" size="sm">Tokenize</Button>
+            {!tokenized && !tokenAddress && (
+              <Button 
+                variant="glass" 
+                size="sm"
+                onClick={() => setShowTokenizeModal(true)}
+              >
+                Tokenize
+              </Button>
             )}
           </div>
         </div>
       </div>
+      
+      {showTokenizeModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="w-full max-w-md">
+            <TokenizeContent 
+              post={post}
+              onSuccess={handleTokenizeSuccess}
+              onClose={() => setShowTokenizeModal(false)}
+            />
+          </div>
+        </div>
+      )}
     </GlassCard>
   );
 }; 

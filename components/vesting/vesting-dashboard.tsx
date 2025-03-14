@@ -20,7 +20,7 @@ export const VestingDashboard: React.FC = () => {
   
   // Mock provider for demo purposes
   const getProvider = () => {
-    return new ethers.providers.JsonRpcProvider("https://rpc.mainnet-alpha.sonic.game");
+    return new ethers.JsonRpcProvider("https://rpc.mainnet-alpha.sonic.game");
   };
   
   // Mock signer for demo purposes
@@ -76,7 +76,7 @@ export const VestingDashboard: React.FC = () => {
           prev.map(schedule => schedule.id === vestingId ? updatedSchedule : schedule)
         );
       } else {
-        toast.info('No new milestones reached yet');
+        toast('No new milestones reached yet');
       }
     } catch (error) {
       console.error('Error checking milestones:', error);

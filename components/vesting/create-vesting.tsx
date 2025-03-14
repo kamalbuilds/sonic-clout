@@ -77,7 +77,7 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
       
       const vestingParams = {
         tokenAddress,
-        amount: ethers.parseUnits(amount).toString(),
+        amount: ethers.parseUnits(amount, 18).toString(),
         oracleAddress: ORACLES[metricType],
         metricType,
         milestones

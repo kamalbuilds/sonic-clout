@@ -50,7 +50,7 @@ const MOCK_BONDS: SonicBondProps[] = [
   {
     id: '4',
     name: 'NFT Mint Success',
-    description: 'Bond tracking successful NFT mints on Solana. Value increases with each successful mint.',
+    description: 'Bond tracking successful NFT mints on Sonic. Value increases with each successful mint.',
     creator: '0x4567890123456789012345678901234567890123',
     category: 'content',
     metric: 'mints',

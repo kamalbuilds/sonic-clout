@@ -4,6 +4,9 @@ import { PostCard } from "@/components/social/post-card";
 import { TokenCard } from "@/components/trading/token-card";
 import CreatePost from "@/components/social/create-post";
 import Posts from "@/components/social/posts";
+import { VestingDashboard } from "@/components/vesting/vesting-dashboard";
+import { SonicBonds } from "@/components/bonds/sonic-bonds";
+import Link from "next/link";
 
 export default function Home() {
   const sampleTokens = [
@@ -48,43 +51,15 @@ export default function Home() {
             </div>
           </GlassCard>
 
+          <VestingDashboard />
+
           <GlassCard className="p-4">
-            <h2 className="text-xl font-bold mb-4">Skill Vesting</h2>
-            <div className="space-y-4">
-              <div className="bg-white/5 rounded-md p-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Followers</span>
-                  <span className="text-sm font-bold">250/1000</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2 mt-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style={{ width: "25%" }}></div>
-                </div>
-                <div className="text-xs text-gray-400 mt-1">Unlock 20% $SONIC at 1,000 followers</div>
-              </div>
-
-              <div className="bg-white/5 rounded-md p-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Content Views</span>
-                  <span className="text-sm font-bold">15K/50K</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2 mt-2">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style={{ width: "30%" }}></div>
-                </div>
-                <div className="text-xs text-gray-400 mt-1">Unlock 30% $SONIC at 50K views</div>
-              </div>
-
-              <Button
-                variant="glassColored"
-                gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
-                className="w-full"
-              >
-                Claim Available $SONIC
-              </Button>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Sonic Bonds</h2>
+              <Link href="/bonds">
+                <Button variant="glass" size="sm">View All</Button>
+              </Link>
             </div>
-          </GlassCard>
-
-          <GlassCard className="p-4">
-            <h2 className="text-xl font-bold mb-4">Sonic Bonds</h2>
             <div className="space-y-3">
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center">
                 <div>
