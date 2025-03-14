@@ -2,9 +2,12 @@
 
 import { formatAddress } from '@/components/ui/utils';
 import { Post, PostReactionType } from '@/types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOrbis } from "@orbisclub/components";
 import { FaRegThumbsDown } from "react-icons/fa6";
+import { pinata } from '@/config/pinata';
+import { User } from 'lucide-react';
+import Link from 'next/link';
 
 
 const FeedContainer = ({ post, handleDisplayReplies }: { post: Post, handleDisplayReplies: (id: string) => void }) => {
@@ -12,6 +15,7 @@ const FeedContainer = ({ post, handleDisplayReplies }: { post: Post, handleDispl
 
     const [updatedPost, setUpdatedPost] = useState<Post>(post);
     const [reacting, setReacting] = useState(false);
+    const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
 
     const formattedDate = new Intl.DateTimeFormat('en-US', {
         month: 'short',
@@ -51,17 +55,45 @@ const FeedContainer = ({ post, handleDisplayReplies }: { post: Post, handleDispl
         }
     }
 
+    useEffect(() => {
+        if (post.creator_details) {
+            const pfpString = post.creator_details.profile?.pfp;
+            if (pfpString) {
+                (async () => {
+                    try {
+                        const res = await pinata.gateways.private.get(pfpString);
+                        if (res.data) {
+                            setProfilePhoto(res.data as string);
+                        }
+                    } catch (error) {
+                        console.log("Error in fetching user profile");
+                    }
+                })();
+            }
+        }
+    }, [post.creator_details]);
+
+
     return (
         <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white">
-                <img src='https://i.pravatar.cc/150?img=1' className="w-full h-full object-cover" />
+                {profilePhoto ? (
+                    <img
+                        src={profilePhoto}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <User className="w-16 h-16 text-gray-400" />
+                )}
             </div>
 
             <div className="flex-1">
-                <div className="flex items-center justify-between">
-                    <div className="font-medium">
-                        {formatAddress(updatedPost.creator_details.metadata.address)}
-                    </div>
+                <div className="flex items-center justify-between cursor-pointer">
+                    <Link href={`/profile/${updatedPost.creator_details.did}`}>
+                        <div className="font-medium">
+                            {formatAddress(updatedPost.creator_details.metadata.address)}
+                        </div></Link>
                     <div className="text-xs text-gray-400">{formattedDate}</div>
                 </div>
 

@@ -32,7 +32,6 @@ const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
         setLoadingPosts(true)
         try {
             let { data, error } = await orbis.getPosts({ context });
-            console.log("posts available", data);
 
             if (data) {
                 setPosts(data);

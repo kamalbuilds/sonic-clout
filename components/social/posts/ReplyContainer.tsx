@@ -23,8 +23,6 @@ const ReplyContainer = ({ post, getReplies }: { post: Post, getReplies: (id: str
                 reply_to: post.stream_id
             })
 
-            console.log("Res", res);
-
             if (res.status == 200) {
                 setTimeout(() => {
                     setSendingReply(false);

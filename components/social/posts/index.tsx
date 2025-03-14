@@ -21,7 +21,9 @@ const Posts = () => {
     const loadPosts = async () => {
         setIsLoading(true);
         let { data, error } = await orbis.getPosts({ context: ORBIS_CONTEXT });
-        console.log("posts available", data);
+
+        console.log("Posts >>>.", data);
+
 
         if (data) {
             setPosts(data);
@@ -31,7 +33,6 @@ const Posts = () => {
     }
 
     useEffect(() => {
-        console.log("user >>>>", user);
         if (user) loadPosts();
     }, [user])
 

@@ -13,9 +13,9 @@ const CreatePost = () => {
 
     const [postText, setPostText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [tokenAddress, setTokenAddress] = useState<string | null>(null);
 
     const handleCreatePost = async () => {
-        console.log("Post Text >>>>", postText);
         try {
             setIsLoading(true);
             const res = await orbis.createPost({
@@ -24,7 +24,6 @@ const CreatePost = () => {
                 body: postText,
             })
 
-            console.log("Res >>>", res);
         } catch (error) {
             console.log("Error creating post", error);
         } finally {
@@ -44,7 +43,7 @@ const CreatePost = () => {
                 <div className="flex-1">
                     <Textarea
                         className="w-full bg-transparent border border-white/10 resize-none rounded-md p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="What's happening in the Solana ecosystem?"
+                        placeholder="What's happening in the Sonic ecosystem?"
                         rows={3}
                         value={postText}
                         onChange={(e) => setPostText(e.target.value)}

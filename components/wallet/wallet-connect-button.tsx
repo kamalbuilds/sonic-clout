@@ -1,24 +1,20 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useState } from "react";
-import { WalletModal } from "./WalletModal";
 import { useOrbis } from "@orbisclub/components";
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
 
 export function WalletButton() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { publicKey, disconnect } = useWallet();
+  const navigate = useRouter();
 
-  const { orbis, user, connecting, setConnectModalVis, setUser } = useOrbis();
+  const { orbis, user, setConnectModalVis, setUser } = useOrbis();
 
   if (user) {
 
@@ -34,15 +30,14 @@ export function WalletButton() {
         <DropdownMenuTrigger asChild>
           <Button variant="outline">{user.did.slice(0, 6)}</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuContent className="w-56 bg-white border-none">
+          <DropdownMenuItem onClick={() => {
+            navigate.push('/profile')
+          }} className="cursor-pointer hover:bg-gray-300">
+            My Account
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>GitHub</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuItem disabled>API</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={disconnect}>
+          <DropdownMenuItem onClick={disconnect} className="cursor-pointer hover:bg-gray-300">
             Log out
           </DropdownMenuItem>
         </DropdownMenuContent>

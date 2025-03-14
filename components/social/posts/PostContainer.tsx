@@ -1,8 +1,6 @@
 "use client";
 
-import { GlassCard } from '@/components/ui/glass-card';
-import { formatAddress } from '@/components/ui/utils';
-import { Post, PostReactionType } from '@/types';
+import { Post } from '@/types';
 import React, { useState } from 'react';
 import { useOrbis } from "@orbisclub/components";
 import ReplyContainer from './ReplyContainer';
@@ -13,7 +11,7 @@ import { Button } from '@/components/ui/button';
 
 const PostContainer = ({ post }: { post: Post }) => {
 
-    const { orbis } = useOrbis()
+    const { orbis, user } = useOrbis()
     const [showReplyContainer, setShowReplyContainer] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [showTokenizeModal, setShowTokenizeModal] = useState(false);
@@ -57,12 +55,12 @@ const PostContainer = ({ post }: { post: Post }) => {
         <>
             <div className="flex flex-col gap-4">
                 <FeedContainer post={post} handleDisplayReplies={handleDisplayReplies} />
-                
+
                 {/* Tokenization Button */}
-                {!tokenAddress && (
+                {(!tokenAddress && post.creator === user.did) && (
                     <div className="flex justify-end">
-                        <Button 
-                            variant="glass" 
+                        <Button
+                            variant="glass"
                             size="sm"
                             onClick={() => setShowTokenizeModal(true)}
                         >
@@ -80,8 +78,8 @@ const PostContainer = ({ post }: { post: Post }) => {
                                 Token Address: {tokenAddress.slice(0, 8)}...{tokenAddress.slice(-6)}
                             </div>
                         </div>
-                        <Button 
-                            variant="glass" 
+                        <Button
+                            variant="glass"
                             size="sm"
                         >
                             Trade
@@ -89,15 +87,15 @@ const PostContainer = ({ post }: { post: Post }) => {
                     </div>
                 )}
             </div>
-            
+
             {showReplyContainer && <Replies replies={replies} isLoading={isLoading} />}
             {selectedId && <ReplyContainer post={post} getReplies={getReplies} />}
-            
+
             {/* Tokenization Modal */}
             {showTokenizeModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="w-full max-w-md">
-                        <TokenizeContent 
+                        <TokenizeContent
                             post={post}
                             onSuccess={handleTokenizeSuccess}
                             onClose={() => setShowTokenizeModal(false)}
