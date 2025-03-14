@@ -1,13 +1,11 @@
 // @ts-nocheck
 import { ethers } from 'ethers';
 
-// Use require instead of import for JSON file
-const SkillVestingABI = require('../../../contracts/artifacts/contracts/SkillVesting.sol/SkillVesting.json');
+import SkillVestingABI from '../../../abi/SkillVesting.json';
 
 // Contract address will need to be updated after deployment
 const SKILL_VESTING_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9';
 
-// Add type safety with "any" for quick fix - you can add proper types later
 interface Log {
   topics: string[];
   data: string;
