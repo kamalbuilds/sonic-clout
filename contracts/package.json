@@ -1,0 +1,23 @@
+{
+    "name": "contracts",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "hardhat node",
+        "compile": "hardhat compile",
+        "deploy": "hardhat run scripts/deploy.ts",
+        "verify": "hardhat verify --network sonic <contract-address>",
+        "test": "hardhat test",
+        "typechain": "hardhat typechain"
+    },
+    "dependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+        "@openzeppelin/contracts": "^5.0.0",
+        "@solana/web3.js": "^1.98.0",
+        "@switchboard-xyz/solana.js": "^3.2.5",
+        "ethers": "^6.4.0"
+    },
+    "devDependencies": {
+        "hardhat": "^2.16.0"
+    }
+}

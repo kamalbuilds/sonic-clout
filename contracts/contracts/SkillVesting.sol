@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+// Counters is removed in OpenZeppelin v5.0.0
 
 interface ISwitchboardOracle {
     function latestResult() external view returns (int256);
@@ -14,8 +14,8 @@ interface ISwitchboardOracle {
  * @dev Contract for vesting tokens based on social metrics tracked by oracles
  */
 contract SkillVesting is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _vestingIdCounter;
+    // Replace Counters with a simple uint256
+    uint256 private _vestingIdCounter;
     
     struct Milestone {
         uint256 threshold;
@@ -59,26 +59,18 @@ contract SkillVesting is Ownable {
         // Transfer tokens to contract
         IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
         
-        // Create milestones
-        Milestone[] memory milestones = new Milestone[](thresholds.length);
+        // Check total percentage
         uint256 totalPercentage = 0;
-        
-        for (uint256 i = 0; i < thresholds.length; i++) {
-            milestones[i] = Milestone({
-                threshold: thresholds[i],
-                unlockPercentage: unlockPercentages[i],
-                reached: false
-            });
-            
+        for (uint256 i = 0; i < unlockPercentages.length; i++) {
             totalPercentage += unlockPercentages[i];
         }
-        
         require(totalPercentage <= 10000, "Total percentage cannot exceed 100%");
         
-        // Create vesting schedule
-        _vestingIdCounter.increment();
-        uint256 vestingId = _vestingIdCounter.current();
+        // Increment counter manually
+        _vestingIdCounter += 1;
+        uint256 vestingId = _vestingIdCounter;
         
+        // Create the vesting schedule with empty milestones array
         vestingSchedules[vestingId] = VestingSchedule({
             creator: msg.sender,
             tokenAddress: tokenAddress,
@@ -86,9 +78,18 @@ contract SkillVesting is Ownable {
             unlockedAmount: 0,
             oracleAddress: oracleAddress,
             metricType: metricType,
-            milestones: milestones,
+            milestones: new Milestone[](0),
             active: true
         });
+        
+        // Add milestones one by one to avoid memory-to-storage array copying
+        for (uint256 i = 0; i < thresholds.length; i++) {
+            vestingSchedules[vestingId].milestones.push(Milestone({
+                threshold: thresholds[i],
+                unlockPercentage: unlockPercentages[i],
+                reached: false
+            }));
+        }
         
         // Add to creator's vestings
         creatorVestings[msg.sender].push(vestingId);

@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+// Counters is removed in OpenZeppelin v5.0.0
 
 /**
  * @title ContentToken
@@ -45,8 +45,8 @@ contract ContentToken is ERC20, Ownable {
  * @dev Factory contract for creating content tokens
  */
 contract SPLTokenFactory is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenCounter;
+    // Replace Counters with a simple uint256
+    uint256 private _tokenCounter;
     
     uint256 public mintFee = 0.5 ether; // 0.5 SONIC
     address public feeReceiver;
@@ -85,8 +85,9 @@ contract SPLTokenFactory is Ownable {
             msg.sender
         );
         
-        _tokenCounter.increment();
-        uint256 tokenId = _tokenCounter.current();
+        // Increment counter manually
+        _tokenCounter += 1;
+        uint256 tokenId = _tokenCounter;
         
         tokens[tokenId] = address(newToken);
         contentToToken[contentHash] = tokenId;
@@ -105,6 +106,6 @@ contract SPLTokenFactory is Ownable {
     }
     
     function getTokenCount() external view returns (uint256) {
-        return _tokenCounter.current();
+        return _tokenCounter;
     }
 } 
