@@ -113,37 +113,39 @@ export const PostCard: React.FC<PostCardProps> = ({
             </div>
           )}
           
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
-            <div className="flex items-center gap-4">
-              <button className="flex items-center gap-1 hover:text-blue-400 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          <div className="mt-3 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-6">
+              <button className="flex items-center gap-1.5 hover:text-blue-400 active:scale-95 transition-all interactive-item group">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:fill-blue-400/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                <span>{likes}</span>
+                <span className="font-medium">{likes}</span>
               </button>
               
-              <button className="flex items-center gap-1 hover:text-blue-400 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <button className="flex items-center gap-1.5 hover:text-blue-400 active:scale-95 transition-all interactive-item group">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:fill-blue-400/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <span>{comments}</span>
+                <span className="font-medium">{comments}</span>
               </button>
               
-              <button className="flex items-center gap-1 hover:text-blue-400 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              <button className="flex items-center gap-1.5 hover:text-blue-400 active:scale-95 transition-all interactive-item group">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:fill-blue-400/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
-                <span>{shares}</span>
+                <span className="font-medium">{shares}</span>
               </button>
             </div>
             
             {!tokenized && !tokenAddress && (
               <Button 
-                variant="glass" 
+                variant="glassColored"
+                gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
                 size="sm"
                 onClick={() => setShowTokenizeModal(true)}
+                className="font-medium"
               >
-                Tokenize
+                Tokenize Content
               </Button>
             )}
           </div>
@@ -154,7 +156,11 @@ export const PostCard: React.FC<PostCardProps> = ({
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="w-full max-w-md">
             <TokenizeContent 
-              post={post}
+              post={{
+                content: { body: content },
+                creator_details: { metadata: { address: author.address } },
+                stream_id: Math.random().toString(36).substring(2, 15)
+              }}
               onSuccess={handleTokenizeSuccess}
               onClose={() => setShowTokenizeModal(false)}
             />
