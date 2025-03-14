@@ -22,8 +22,7 @@ const Posts = () => {
         setIsLoading(true);
         let { data, error } = await orbis.getPosts({ context: ORBIS_CONTEXT });
 
-        console.log("Posts >>>.", data);
-
+        console.log("Posts ", data);
 
         if (data) {
             setPosts(data);

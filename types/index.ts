@@ -17,6 +17,12 @@ export type PostContent = {
     body: string;
     title: string;
     context: string;
+    media: PostMediaType[];
+}
+
+export type PostMediaType = {
+    url: string;
+    type: string;
 }
 
 export type CreatorDetails = {
