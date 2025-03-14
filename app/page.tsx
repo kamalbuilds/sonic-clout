@@ -100,7 +100,7 @@ export default function Home() {
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center hover:bg-white/10 transition-colors">
                 <div>
                   <div className="font-medium">Boss Attempts</div>
-                  <div className="text-xs text-gray-400">Aurory Game</div>
+                  <div className="text-xs text-white-400">Aurory Game</div>
                 </div>
                 <Button variant="glass" size="sm">Trade</Button>
               </div>
@@ -108,7 +108,7 @@ export default function Home() {
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center hover:bg-white/10 transition-colors">
                 <div>
                   <div className="font-medium">Clip Shares</div>
-                  <div className="text-xs text-gray-400">CryptoGamer</div>
+                  <div className="text-xs text-white-400">CryptoGamer</div>
                 </div>
                 <Button variant="glass" size="sm">Trade</Button>
               </div>
@@ -116,7 +116,7 @@ export default function Home() {
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center hover:bg-white/10 transition-colors">
                 <div>
                   <div className="font-medium">Viral Posts</div>
-                  <div className="text-xs text-gray-400">SolanaBuilder</div>
+                  <div className="text-xs text-white-400">SolanaBuilder</div>
                 </div>
                 <Button variant="glass" size="sm">Trade</Button>
               </div>

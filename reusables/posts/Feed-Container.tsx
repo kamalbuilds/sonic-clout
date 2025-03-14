@@ -99,7 +99,7 @@ const FeedContainer = ({ post, handleDisplayReplies }: { post: Post, handleDispl
 
                 <div className="mt-2 text-sm">{updatedPost.content.body}</div>
 
-                <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                <div className="mt-3 flex items-center justify-between text-sm text-white-400">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => handleDisplayReplies(updatedPost.stream_id)}

@@ -108,7 +108,7 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
         <h2 className="text-xl font-bold">Create Skill Vesting</h2>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-white-400 hover:text-white transition-colors"
         >
           ✕
         </button>

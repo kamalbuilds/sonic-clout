@@ -76,7 +76,7 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
         <h2 className="text-xl font-bold">Tokenize Your Content</h2>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-white-400 hover:text-white transition-colors"
         >
           ✕
         </button>
@@ -117,7 +117,7 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
         
         <div className="bg-white/5 rounded-md p-3">
           <h3 className="text-sm font-semibold mb-2">Tokenization Fee</h3>
-          <p className="text-xs text-gray-400">0.5 $SONIC will be charged for tokenization</p>
+          <p className="text-xs text-white-400">0.5 $SONIC will be charged for tokenization</p>
         </div>
         
         <div className="flex justify-end gap-3">

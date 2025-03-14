@@ -76,7 +76,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div className="font-medium">
               {author.displayName || formatAddress(author.address)}
             </div>
-            <div className="text-xs text-gray-400">{formattedDate}</div>
+            <div className="text-xs text-white-400">{formattedDate}</div>
           </div>
           
           <div className="mt-2 text-sm">{content}</div>

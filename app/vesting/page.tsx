@@ -8,7 +8,7 @@ export default function VestingPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Skill Vesting</h1>
-        <p className="text-gray-400">
+        <p className="text-white-400">
           Manage your vesting schedules tied to your social metrics and content performance.
           Earn tokens as you reach follower and view milestones.
         </p>
@@ -24,7 +24,7 @@ export default function VestingPage() {
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">1</div>
               <h3 className="font-semibold">Create a Vesting Schedule</h3>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-white-400">
               Lock your tokens and set milestones based on followers, views, or engagement.
             </p>
           </div>
@@ -34,7 +34,7 @@ export default function VestingPage() {
               <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center font-bold">2</div>
               <h3 className="font-semibold">Track Your Progress</h3>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-white-400">
               As you gain followers and views, check your progress toward each milestone.
             </p>
           </div>
@@ -44,7 +44,7 @@ export default function VestingPage() {
               <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold">3</div>
               <h3 className="font-semibold">Claim Your Tokens</h3>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-white-400">
               Once you reach milestones, claim your unlocked tokens to your wallet.
             </p>
           </div>

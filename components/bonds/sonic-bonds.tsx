@@ -131,7 +131,7 @@ export const SonicBonds: React.FC = () => {
           </div>
         ) : filteredBonds.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-400 mb-4">No bonds found for this category</p>
+            <p className="text-white-400 mb-4">No bonds found for this category</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,7 +150,7 @@ export const SonicBonds: React.FC = () => {
                 <h2 className="text-xl font-bold">Create New Bond</h2>
                 <button 
                   onClick={() => setShowCreateModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-white-400 hover:text-white transition-colors"
                 >
                   ✕
                 </button>
@@ -219,7 +219,7 @@ export const SonicBonds: React.FC = () => {
                 
                 <div className="bg-white/5 rounded-md p-3">
                   <h3 className="text-sm font-semibold mb-2">Oracle Connection</h3>
-                  <p className="text-xs text-gray-400 mb-2">
+                  <p className="text-xs text-white-400 mb-2">
                     Connect to a Switchboard oracle to track the performance metric of your bond.
                   </p>
                   <select

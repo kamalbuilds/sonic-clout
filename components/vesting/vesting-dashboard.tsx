@@ -153,7 +153,7 @@ export const VestingDashboard: React.FC = () => {
       <GlassCard className="p-5">
         <div className="text-center py-8">
           <h2 className="text-xl font-semibold mb-4">Skill Vesting</h2>
-          <p className="text-gray-400 mb-6">Connect your wallet to view your vesting schedules</p>
+          <p className="text-white-400 mb-6">Connect your wallet to view your vesting schedules</p>
           <Button variant="glass">Connect Wallet</Button>
         </div>
       </GlassCard>
@@ -180,7 +180,7 @@ export const VestingDashboard: React.FC = () => {
           </div>
         ) : vestingSchedules.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-400 mb-4">You don't have any vesting schedules yet</p>
+            <p className="text-white-400 mb-4">You don't have any vesting schedules yet</p>
             <Button 
               variant="glassColored"
               gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
@@ -195,19 +195,19 @@ export const VestingDashboard: React.FC = () => {
               <div key={schedule.id} className="bg-white/5 rounded-lg border border-white/10 p-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <div className="text-sm text-gray-400">Token</div>
+                    <div className="text-sm text-white-400">Token</div>
                     <div className="font-semibold truncate">{schedule.tokenAddress}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Total Amount</div>
+                    <div className="text-sm text-white-400">Total Amount</div>
                     <div className="font-semibold">{schedule.totalAmount}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Metric Type</div>
+                    <div className="text-sm text-white-400">Metric Type</div>
                     <div className="font-semibold capitalize">{schedule.metricType}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Unlocked Amount</div>
+                    <div className="text-sm text-white-400">Unlocked Amount</div>
                     <div className="font-semibold text-green-400">{schedule.unlockedAmount}</div>
                   </div>
                 </div>

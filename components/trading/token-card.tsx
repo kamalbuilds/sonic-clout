@@ -72,12 +72,12 @@ export const TokenCard: React.FC<TokenCardProps> = ({
           
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
             <div className="bg-white/10 rounded-md p-2 backdrop-blur-sm border border-white/10 shadow-inner">
-              <div className="text-gray-300 mb-1">24h Volume</div>
+              <div className="text-white-300 mb-1">24h Volume</div>
               <div className="font-medium tracking-wide" style={textShadowStyle}>${formatAmount(volume24h)}</div>
             </div>
             {marketCap && (
               <div className="bg-white/10 rounded-md p-2 backdrop-blur-sm border border-white/10 shadow-inner">
-                <div className="text-gray-300 mb-1">Market Cap</div>
+                <div className="text-white-300 mb-1">Market Cap</div>
                 <div className="font-medium tracking-wide" style={textShadowStyle}>${formatAmount(marketCap)}</div>
               </div>
             )}

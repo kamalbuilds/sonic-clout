@@ -107,7 +107,7 @@ export const SonicBondCard: React.FC<SonicBondProps> = ({
             <h3 className="font-semibold text-lg">{tradeType === 'buy' ? 'Buy' : 'Sell'} {name}</h3>
             <button 
               onClick={handleCloseTrade}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-white-400 hover:text-white transition-colors"
             >
               ✕
             </button>
@@ -126,16 +126,16 @@ export const SonicBondCard: React.FC<SonicBondProps> = ({
           
           <div className="bg-white/5 rounded-md p-3 mb-4">
             <div className="flex justify-between mb-1">
-              <span className="text-sm text-gray-400">Price per Bond</span>
+              <span className="text-sm text-white-400">Price per Bond</span>
               <span className="text-sm">${formatAmount(price)}</span>
             </div>
             <div className="flex justify-between mb-1">
-              <span className="text-sm text-gray-400">Quantity</span>
+              <span className="text-sm text-white-400">Quantity</span>
               <span className="text-sm">{tradeAmount}</span>
             </div>
             <div className="border-t border-white/10 my-2 pt-2"></div>
             <div className="flex justify-between">
-              <span className="text-sm text-gray-400">Total</span>
+              <span className="text-sm text-white-400">Total</span>
               <span className="text-sm font-semibold">${formatAmount(getEstimatedTotal())}</span>
             </div>
           </div>
@@ -171,23 +171,23 @@ export const SonicBondCard: React.FC<SonicBondProps> = ({
             </div>
           </div>
           
-          <p className="text-sm text-gray-400 mb-3 line-clamp-2">{description}</p>
+          <p className="text-sm text-white-400 mb-3 line-clamp-2">{description}</p>
           
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
             <div>
-              <div className="text-xs text-gray-400">Current Metric</div>
+              <div className="text-xs text-white-400">Current Metric</div>
               <div className="font-medium text-sm">{formatAmount(currentValue)} {metric}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-400">Price</div>
+              <div className="text-xs text-white-400">Price</div>
               <div className="font-medium text-sm">${formatAmount(price)}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-400">Supply</div>
+              <div className="text-xs text-white-400">Supply</div>
               <div className="font-medium text-sm">{formatAmount(totalSupply)}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-400">Market Cap</div>
+              <div className="text-xs text-white-400">Market Cap</div>
               <div className="font-medium text-sm">${formatAmount(marketCap)}</div>
             </div>
           </div>

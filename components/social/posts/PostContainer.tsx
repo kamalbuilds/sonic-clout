@@ -74,7 +74,7 @@ const PostContainer = ({ post }: { post: Post }) => {
                     <div className="bg-white/5 rounded-md p-3 flex justify-between items-center">
                         <div>
                             <div className="text-sm font-medium text-green-400">Tokenized Content</div>
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-white-400">
                                 Token Address: {tokenAddress.slice(0, 8)}...{tokenAddress.slice(-6)}
                             </div>
                         </div>
