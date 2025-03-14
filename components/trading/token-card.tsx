@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { GlassCard } from '../ui/glass-card';
 import { Button } from '../ui/button';
@@ -36,6 +37,19 @@ export const TokenCard: React.FC<TokenCardProps> = ({
   const isPriceUp = priceChange24h >= 0;
   
   const textShadowStyle = { textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' };
+  
+  // Custom cursor SVGs as data URLs
+  const buyCursorSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="%233b82f630"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" fill="%233b82f610"/><path d="M12 8l3 8h-6l3-8z" fill="%233b82f680"/></svg>`;
+  
+  const sellCursorSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%23ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="%23ec489930"/><path d="M12 8l-4 4 4 4" fill="%23ec489980"/><path d="M16 12H8" fill="%23ec489980"/></svg>`;
+  
+  const buyCursorStyle = { 
+    cursor: `url('${buyCursorSvg}') 16 16, pointer`,
+  };
+  
+  const sellCursorStyle = { 
+    cursor: `url('${sellCursorSvg}') 16 16, pointer`,
+  };
   
   return (
     <GlassCard 
@@ -97,6 +111,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
               gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
               size="sm" 
               className="flex-1 font-medium interactive-item"
+              style={buyCursorStyle}
             >
               Buy
             </Button>
@@ -104,6 +119,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
               variant="glass" 
               size="sm" 
               className="flex-1 font-medium interactive-item"
+              style={sellCursorStyle}
             >
               Sell
             </Button>
