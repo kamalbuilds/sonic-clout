@@ -4,8 +4,7 @@ import { ethers } from 'ethers';
 // Use require instead of import for JSON file
 const SPLTokenFactoryABI = require('../../../contracts/artifacts/contracts/SPLTokenFactory.sol/SPLTokenFactory.json');
 
-// Contract address will need to be updated after deployment
-const SPL_TOKEN_FACTORY_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9';
+const SPL_TOKEN_FACTORY_ADDRESS = process.env.NEXT_PUBLIC_SPL_TOKEN_FACTORY_ADDRESS || '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9';
 
 export interface TokenMetadata {
   name: string;
