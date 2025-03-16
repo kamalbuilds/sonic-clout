@@ -13,6 +13,7 @@ export default function Home() {
     {
       name: "Aurory Clip Token",
       symbol: "CLIP",
+      icon: "https://cryptologos.cc/logos/cube-auto-logo.png",
       price: 0.85,
       priceChange24h: 0.12,
       volume24h: 24500,
@@ -22,7 +23,7 @@ export default function Home() {
     {
       name: "Star Atlas",
       symbol: "ATLAS",
-      icon: "https://cryptologos.cc/logos/star-atlas-atlas-logo.png",
+      icon: "https://cryptologos.cc/logos/appcoins-appc-logo.png",
       price: 0.02,
       priceChange24h: -0.05,
       volume24h: 1250000,
@@ -89,7 +90,10 @@ export default function Home() {
             </div>
           </GlassCard>
 
-          <GlassCard className="p-4" hover="glow">
+          <GlassCard className="p-4" hover="glow"
+                      variant="colored" 
+                      gradient="rgba(236, 72, 153, 0.3), rgba(59, 130, 246, 0.3)"
+                    >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Sonic Bonds</h2>
               <Link href="/bonds">
@@ -102,7 +106,8 @@ export default function Home() {
                   <div className="font-medium">Boss Attempts</div>
                   <div className="text-xs text-white-400">Aurory Game</div>
                 </div>
-                <Button variant="glass" size="sm">Trade</Button>
+                <Button variant="glassColored" 
+                gradient="rgba(236, 72, 153, 0.5), rgba(59, 130, 246, 0.5)" size="sm">Trade</Button>
               </div>
 
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center hover:bg-white/10 transition-colors">
@@ -110,7 +115,8 @@ export default function Home() {
                   <div className="font-medium">Clip Shares</div>
                   <div className="text-xs text-white-400">CryptoGamer</div>
                 </div>
-                <Button variant="glass" size="sm">Trade</Button>
+                <Button variant="glassColored" 
+                gradient="rgba(236, 72, 153, 0.5), rgba(59, 130, 246, 0.5)" size="sm">Trade</Button>
               </div>
 
               <div className="bg-white/5 rounded-md p-3 flex justify-between items-center hover:bg-white/10 transition-colors">
@@ -118,12 +124,14 @@ export default function Home() {
                   <div className="font-medium">Viral Posts</div>
                   <div className="text-xs text-white-400">SolanaBuilder</div>
                 </div>
-                <Button variant="glass" size="sm">Trade</Button>
+                <Button   variant="glassColored" 
+                gradient="rgba(236, 72, 153, 0.5), rgba(59, 130, 246, 0.5)"
+                 size="sm">Trade</Button>
               </div>
             </div>
           </GlassCard>
           
-          <GlassCard 
+          {/* <GlassCard 
             variant="colored" 
             gradient="rgba(236, 72, 153, 0.3), rgba(59, 130, 246, 0.3)"
             className="p-4"
@@ -141,7 +149,7 @@ export default function Home() {
                 View Examples
               </Button>
             </Link>
-          </GlassCard>
+          </GlassCard> */}
         </div>
       </div>
     </div>

@@ -17,6 +17,8 @@ Built using Sonic SVM's high-speed infrastructure, Orb SDK for social primitives
 
 ## Demo Video
 
+https://www.youtube.com/watch?v=pKfJja25hm8
+
 ## Program-IDs
 
 ## Tech Stack

@@ -48,7 +48,7 @@ export default function VestingPage() {
         
         <Card>
           <CardHeader>
-            <CardTitle>Powered by Solana</CardTitle>
+            <CardTitle>Powered by Sonic</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm">

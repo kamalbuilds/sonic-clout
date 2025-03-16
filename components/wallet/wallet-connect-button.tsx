@@ -10,9 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation";
+import { ConnectWalletButton } from "./ConnectWalletButton";
+import { NetworkToggle } from "./NetworkToggle";
+import { useState } from "react";
 
 export function WalletButton() {
   const navigate = useRouter();
+
 
   const { orbis, user, setConnectModalVis, setUser } = useOrbis();
 
@@ -26,11 +30,13 @@ export function WalletButton() {
     }
 
     return (
-      <DropdownMenu>
+      <>
+            <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">{user.did.slice(0, 6)}</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 bg-white border-none">
+          
           <DropdownMenuItem onClick={() => {
             navigate.push('/profile')
           }} className="cursor-pointer hover:bg-gray-300">
@@ -42,6 +48,10 @@ export function WalletButton() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      <NetworkToggle />
+      <ConnectWalletButton />
+      </>
     )
   }
 
@@ -51,8 +61,10 @@ export function WalletButton() {
         onClick={() => setConnectModalVis(true)}
         className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-purple-600 text-white rounded-md hover:from-cyan-500 hover:to-purple-500 transition-all font-mono border border-cyan-400/20 shadow-lg shadow-cyan-500/20"
       >
-        Connect Wallet
+        Connect SONIC DID
       </Button>
+      <NetworkToggle />
+      <ConnectWalletButton />
     </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from 'react-hot-toast';
 
 // Define API response types
@@ -52,6 +52,14 @@ interface UserLiquidity {
   amount: number;
 }
 
+interface SwapData {
+  inputMint: string;
+  outputMint: string;
+  amount: string;
+  inputDecimal?: number;
+  slippageBps?: number;
+}
+
 interface SEGAContextType {
   pools: Pool[];
   userLiquidity: UserLiquidity[];
@@ -63,6 +71,7 @@ interface SEGAContextType {
   createPool: (tokenA: string, tokenB: string, fee: number) => Promise<boolean>;
   swap: (tokenIn: string, tokenOut: string, amountIn: string, slippage: number) => Promise<boolean>;
   getSwapQuote: (tokenIn: string, tokenOut: string, amountIn: string, slippage: number) => Promise<SwapResponse | null>;
+  fetchSwapRawData: (swapData: SwapData) => Promise<any>;
   poolsLoading: boolean;
   userLiquidityLoading: boolean;
   swapLoading: boolean;
@@ -70,23 +79,28 @@ interface SEGAContextType {
 }
 
 // Define API URLs
-const API_BASE_URL = "https://api.sega.sonic";
+const BASE_URL = "https://api.sega.so/swap";
+const API_BASE_URL = "https://api.sega.so";
 const POOL_API_URL = `${API_BASE_URL}/pools`;
 const TOKEN_API_URL = `${API_BASE_URL}/tokens`;
 const USER_LIQUIDITY_API_URL = `${API_BASE_URL}/liquidity`;
-const SWAP_QUOTE_URL = `${API_BASE_URL}/swap/compute`;
-const SWAP_TRANSACTION_URL = `${API_BASE_URL}/swap/transaction`;
+const TX_VERSION = "V1.0.0";
 
 const SEGAContext = createContext<SEGAContextType | undefined>(undefined);
 
 export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { publicKey, connected } = useWallet();
+  const { wallet } = useWallet();
+  console.log(wallet,"wallet");
+  const solanaAddress = wallet?.publicKey?.toString() || publicKey?.toString();
+  
   const [pools, setPools] = useState<Pool[]>([]);
   const [tokenList, setTokenList] = useState<Token[]>([]);
   const [userLiquidity, setUserLiquidity] = useState<UserLiquidity[]>([]);
   const [poolsLoading, setPoolsLoading] = useState(false);
   const [userLiquidityLoading, setUserLiquidityLoading] = useState(false);
   const [swapLoading, setSwapLoading] = useState(false);
+  const [txResponse, setTxResponse] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch tokens list
@@ -95,6 +109,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // This would be a real API call in production
       // const response = await fetch(TOKEN_API_URL);
       // const data = await response.json();
+      // console.log(data,"data for token list");
       // setTokenList(data.tokens);
       
       // For development, use mock data
@@ -114,11 +129,11 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
         },
         {
-          address: "SEGAxdYMj13HdiKvUjHtQh9Xy9YpvgJNZYSBqgQxrhz7",
-          symbol: "SEGA",
-          name: "SEGA Token",
+          address: "mrujEYaN1oyQXDHeYNxBYpxWKVkQ2XsGxfznpifu4aL",
+          symbol: "SONIC",
+          name: "Sonic Token",
           decimals: 6,
-          logoURI: "/sega-logo.svg"
+          logoURI: "https://arweave.net/599UDQd5YAUfesAJCTNZ-4ELWLHX5pbid-ahpoJ-w1A"
         },
       ]);
     } catch (err) {
@@ -151,35 +166,35 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
             },
             token1: {
-              address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              symbol: "USDC",
-              name: "USD Coin",
+              address: "CCaj4n3kbuqsGvx4KxiXBfoQPtAgww6fwinHTAPqV5dS",
+              symbol: "SONIC",
+              name: "SONIC",
               decimals: 6,
-              logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+              logoURI: "https://arweave.net/599UDQd5YAUfesAJCTNZ-4ELWLHX5pbid-ahpoJ-w1A"
             },
             fee: 0.0025,
-            liquidity: 2500000,
-            volume24h: 750000,
+            liquidity: 8668,
+            volume24h: 143,
             apr: 18.5
           },
           {
             id: "pool-2",
             token0: {
-              address: "SEGAxdYMj13HdiKvUjHtQh9Xy9YpvgJNZYSBqgQxrhz7",
-              symbol: "SEGA",
-              name: "SEGA Token",
-              decimals: 6,
-              logoURI: "/sega-logo.svg"
+              address: "So11111111111111111111111111111111111111112",
+              symbol: "sonicSOL",
+              name: "Sonic SOL",
+              decimals: 9,
+              logoURI: "https://raw.githubusercontent.com/hyperlane-xyz/hyperlane-registry/refs/heads/main/deployments/warp_routes/sonicSOL/logo.png"
             },
             token1: {
-              address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-              symbol: "USDC",
-              name: "USD Coin",
+              address: "mrujEYaN1oyQXDHeYNxBYpxWKVkQ2XsGxfznpifu4aL",
+              symbol: "SONIC",
+              name: "SONIC Token",
               decimals: 6,
-              logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+              logoURI: "https://arweave.net/599UDQd5YAUfesAJCTNZ-4ELWLHX5pbid-ahpoJ-w1A"
             },
             fee: 0.0025,
-            liquidity: 500000,
+            liquidity: 120,
             volume24h: 150000,
             apr: 22.5
           }
@@ -195,7 +210,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Fetch user liquidity
   const fetchUserLiquidity = async () => {
-    if (!connected || !publicKey) {
+    if (!solanaAddress) {
       setUserLiquidity([]);
       return;
     }
@@ -205,7 +220,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     try {
       // This would be a real API call in production
-      // const response = await fetch(`${USER_LIQUIDITY_API_URL}/${publicKey.toString()}`);
+      // const response = await fetch(`${USER_LIQUIDITY_API_URL}/${solanaAddress}`);
       // const data = await response.json();
       // setUserLiquidity(data.liquidity);
       
@@ -228,7 +243,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Add liquidity
   const addLiquidity = async (poolId: string, amountA: number, amountB: number): Promise<boolean> => {
-    if (!connected || !publicKey) {
+    if (!solanaAddress) {
       toast.error("Please connect your wallet.");
       return false;
     }
@@ -243,7 +258,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       //     "Content-Type": "application/json"
       //   },
       //   body: JSON.stringify({
-      //     walletAddress: publicKey.toString(),
+      //     walletAddress: solanaAddress,
       //     poolId,
       //     amountA,
       //     amountB
@@ -267,7 +282,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Remove liquidity
   const removeLiquidity = async (poolId: string, percentage: number): Promise<boolean> => {
-    if (!connected || !publicKey) {
+    if (!solanaAddress) {
       toast.error("Please connect your wallet.");
       return false;
     }
@@ -282,7 +297,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       //     "Content-Type": "application/json"
       //   },
       //   body: JSON.stringify({
-      //     walletAddress: publicKey.toString(),
+      //     walletAddress: solanaAddress,
       //     poolId,
       //     percentage
       //   })
@@ -305,7 +320,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Create pool
   const createPool = async (tokenA: string, tokenB: string, fee: number): Promise<boolean> => {
-    if (!connected || !publicKey) {
+    if (!solanaAddress) {
       toast.error("Please connect your wallet.");
       return false;
     }
@@ -320,7 +335,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       //     "Content-Type": "application/json"
       //   },
       //   body: JSON.stringify({
-      //     walletAddress: publicKey.toString(),
+      //     walletAddress: solanaAddress,
       //     tokenA,
       //     tokenB,
       //     fee
@@ -342,7 +357,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Get Swap Quote
+  // Get Swap Quote (updated to use the production API endpoint)
   const getSwapQuote = async (
     tokenIn: string,
     tokenOut: string,
@@ -353,74 +368,20 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Convert slippage to basis points (e.g., 0.5% -> 50 basis points)
       const slippageBps = Math.round(slippage * 100);
       
-      // For a real implementation we would make an API call like this:
-      // const url = `${SWAP_QUOTE_URL}/swap-base-in?inputMint=${tokenIn}&outputMint=${tokenOut}&amount=${amountIn}&slippageBps=${slippageBps}&txVersion=V0`;
-      // const response = await fetch(url);
-      // const data = await response.json();
+      const url = `${BASE_URL}/compute/swap-base-in?inputMint=${tokenIn}&outputMint=${tokenOut}&amount=${amountIn}&slippageBps=${slippageBps}&txVersion=${TX_VERSION}`;
       
-      // For development, use mock data with a slight delay to simulate network
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+      });
       
-      // Find tokens to calculate appropriate exchange rate
-      const tokenInInfo = tokenList.find(t => t.address === tokenIn);
-      const tokenOutInfo = tokenList.find(t => t.address === tokenOut);
-      
-      if (!tokenInInfo || !tokenOutInfo) {
-        return null;
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.statusText}`);
       }
       
-      // Calculate mock exchange rate
-      let exchangeRate = 1.0;
-      if (tokenInInfo.symbol === 'SOL' && tokenOutInfo.symbol === 'USDC') {
-        exchangeRate = 100;
-      } else if (tokenInInfo.symbol === 'USDC' && tokenOutInfo.symbol === 'SOL') {
-        exchangeRate = 0.01;
-      } else if (tokenInInfo.symbol === 'SEGA' && tokenOutInfo.symbol === 'USDC') {
-        exchangeRate = 5;
-      } else if (tokenInInfo.symbol === 'USDC' && tokenOutInfo.symbol === 'SEGA') {
-        exchangeRate = 0.2;
-      } else if (tokenInInfo.symbol === 'SOL' && tokenOutInfo.symbol === 'SEGA') {
-        exchangeRate = 500;
-      } else if (tokenInInfo.symbol === 'SEGA' && tokenOutInfo.symbol === 'SOL') {
-        exchangeRate = 0.002;
-      }
-      
-      // Calculate output amount based on exchange rate
-      const inputAmountNumber = parseFloat(amountIn) / Math.pow(10, tokenInInfo.decimals);
-      const outputAmountRaw = inputAmountNumber * exchangeRate;
-      const outputAmount = Math.floor(outputAmountRaw * Math.pow(10, tokenOutInfo.decimals)).toString();
-      
-      // Mock price impact between 0.01% and 0.5% based on amount
-      const priceImpact = 0.01 + (inputAmountNumber / 1000) * 0.5;
-      
-      // Create mock response
-      const mockResponse: SwapResponse = {
-        id: `mock-quote-${Date.now()}`,
-        success: true,
-        data: {
-          swapType: "ExactIn",
-          inputMint: tokenIn,
-          inputAmount: amountIn,
-          outputMint: tokenOut,
-          outputAmount: outputAmount,
-          otherAmountThreshold: (parseInt(outputAmount) * (1 - slippage / 100)).toString(),
-          slippageBps: slippageBps,
-          priceImpactPct: priceImpact,
-          routePlan: [
-            {
-              poolId: tokenInInfo.symbol === 'SOL' && tokenOutInfo.symbol === 'USDC' ? "pool-1" : "pool-2",
-              inputMint: tokenIn,
-              outputMint: tokenOut,
-              feeMint: tokenOut,
-              feeRate: 0.0025,
-              feeAmount: (parseInt(outputAmount) * 0.0025).toString(),
-              remainingAccounts: []
-            }
-          ]
-        }
-      };
-      
-      return mockResponse;
+      const result = await response.json();
+      console.log("Swap quote result:", result);
+      return result;
     } catch (err) {
       console.error("Error getting swap quote:", err);
       setError("Failed to get swap quote.");
@@ -428,67 +389,113 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Swap tokens
+  // Submit swap transaction
+  const submitSwapTransaction = async (
+    amount: string,
+    swapResponse: any, 
+    wrapSol = true, 
+    unwrapSol = true
+  ) => {
+    if (!solanaAddress) {
+      toast.error("Please connect your wallet.");
+      return null;
+    }
+    
+    setError(null);
+    
+    try {
+      const url = `${BASE_URL}/transaction/swap-base-in`;
+      
+      const body = JSON.stringify({
+        wallet: solanaAddress,
+        computeUnitPriceMicroLamports: amount,
+        swapResponse,
+        txVersion: TX_VERSION,
+        wrapSol,
+        unwrapSol,
+        outputAccount: solanaAddress,
+      });
+      
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Transaction request failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      setTxResponse(result);
+      return result;
+    } catch (err: any) {
+      setError(err.message || "Transaction failed.");
+      console.error("Transaction API Error:", err);
+      return null;
+    }
+  };
+
+  // Wrapper function to handle both API calls in sequence
+  const fetchSwapRawData = async ({ inputMint, outputMint, amount, inputDecimal = 9, slippageBps = 50 }: SwapData) => {
+    setSwapLoading(true);
+    setError(null);
+    
+    const parsedAmount = Math.floor(parseFloat(amount) * Math.pow(10, inputDecimal)); // Convert to smallest unit
+    
+    console.log(`Parsed Amount: ${parsedAmount} (${amount} * 10^${inputDecimal})`);
+    
+    try {
+      // Step 1: Get Swap Computation
+      const swapComputeResponse = await getSwapQuote(inputMint, outputMint, parsedAmount.toString(), slippageBps / 100);
+      
+      if (!swapComputeResponse || !swapComputeResponse.success) {
+        throw new Error("Swap computation failed.");
+      }
+      
+      // Step 2: Submit Swap Transaction
+      const swapTransactionResponse = await submitSwapTransaction(parsedAmount.toString(), swapComputeResponse);
+      
+      if (swapTransactionResponse) {
+        toast.success("Swap transaction prepared successfully!");
+      }
+      
+      return swapTransactionResponse;
+    } catch (err: any) {
+      setError(err.message || "Swap execution failed.");
+      console.error("Swap Execution Error:", err);
+      toast.error(err.message || "Swap execution failed.");
+      return null;
+    } finally {
+      setSwapLoading(false);
+    }
+  };
+
+  // Legacy swap function (kept for backward compatibility)
   const swap = async (
     tokenIn: string, 
     tokenOut: string, 
     amountIn: string, 
     slippage: number
   ): Promise<boolean> => {
-    if (!connected || !publicKey) {
-      toast.error("Please connect your wallet.");
+    const token = tokenList.find(t => t.address === tokenIn);
+    if (!token) {
+      toast.error("Token information not found");
       return false;
     }
     
-    setError(null);
-    setSwapLoading(true);
+    const response = await fetchSwapRawData({
+      inputMint: tokenIn,
+      outputMint: tokenOut,
+      amount: amountIn,
+      inputDecimal: token.decimals,
+      slippageBps: Math.round(slippage * 100)
+    });
     
-    try {
-      // Get the swap quote first
-      const quoteResponse = await getSwapQuote(tokenIn, tokenOut, amountIn, slippage);
-      
-      if (!quoteResponse || !quoteResponse.success) {
-        toast.error("Failed to get swap quote");
-        return false;
-      }
-      
-      // In a real implementation, we would execute the swap like this:
-      // 1. Get transaction instructions from API
-      // const txRequestBody = {
-      //   wallet: publicKey.toString(),
-      //   computeUnitPriceMicroLamports: "1",
-      //   swapResponse: quoteResponse,
-      //   txVersion: "V0",
-      //   wrapSol: tokenIn === "So11111111111111111111111111111111111111112",
-      //   unwrapSol: tokenOut === "So11111111111111111111111111111111111111112",
-      // };
-      
-      // const txResponse = await fetch(`${SWAP_TRANSACTION_URL}/swap-base-in`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(txRequestBody),
-      // });
-      
-      // const txData = await txResponse.json();
-      
-      // 2. Sign and send transaction
-      // ... Wallet adapter logic to sign and send transaction ...
-
-      // For development, mock success after delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("Swap completed successfully!");
-      return true;
-    } catch (err: any) {
-      console.error("Error swapping tokens:", err);
-      setError(err.message || "Failed to swap tokens.");
-      toast.error("Swap failed. Please try again.");
-      return false;
-    } finally {
-      setSwapLoading(false);
-    }
+    return !!response;
   };
 
   useEffect(() => {
@@ -500,12 +507,12 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   useEffect(() => {
-    if (connected && publicKey) {
+    if (solanaAddress) {
       fetchUserLiquidity();
     } else {
       setUserLiquidity([]);
     }
-  }, [connected, publicKey]);
+  }, [solanaAddress]);
 
   const value = {
     pools,
@@ -518,6 +525,7 @@ export const SEGAProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     createPool,
     swap,
     getSwapQuote,
+    fetchSwapRawData,
     poolsLoading,
     userLiquidityLoading,
     swapLoading,
@@ -535,4 +543,4 @@ export const useSEGA = () => {
   return context;
 };
 
-export type { Pool, UserLiquidity, Token }; 
+export type { Pool, UserLiquidity, Token, SwapData }; 

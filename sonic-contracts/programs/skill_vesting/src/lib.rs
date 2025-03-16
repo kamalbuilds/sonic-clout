@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use std::mem::size_of;
 
-declare_id!("DeBYJGUnhGxwxGUg9UmT4LPyTNKvN2Nf5o2GnCLnRmVC");
+declare_id!("6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6");
 
 #[program]
 pub mod skill_vesting {

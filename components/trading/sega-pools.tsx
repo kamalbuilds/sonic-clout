@@ -93,7 +93,7 @@ export const SEGAPools: React.FC = () => {
   };
 
   const renderPoolsList = () => {
-    if (poolsLoading) {
+    if (!poolsLoading) {
       return (
         <div className="flex justify-center items-center py-10">
           <LoadingCircle size="large" />
