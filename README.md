@@ -19,13 +19,11 @@ Built using Sonic SVM's high-speed infrastructure, Orb SDK for social primitives
 
 https://www.youtube.com/watch?v=pKfJja25hm8
 
-## Program-IDs
+## Sonic Program-IDs
 
-* SonicVesting - 
-
-* SonicBonds - 
-
-* TokenFactory - 
+token_factory = "G14sAxWFrgGzsVMjPd8SttQniQ966RzYPRY5QYGYSUp"
+skill_vesting = "285YigWq8Sy2nqFwVfVFJyoMFjhCvSXLwfNwyEpFufBR"
+sonic_bonds = "7HVxrfcxieWsDWtnn2MmcrLCjxFit821NkNPijzT9UF8"
 
 ## Tech Stack
 

@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use std::mem::size_of;
 
-declare_id!("6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6");
+declare_id!("7HVxrfcxieWsDWtnn2MmcrLCjxFit821NkNPijzT9UF8");
 
 #[program]
 pub mod sonic_bonds {

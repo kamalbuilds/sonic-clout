@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount};
 use std::mem::size_of;
 
-declare_id!("6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6");
+declare_id!("G14sAxWFrgGzsVMjPd8SttQniQ966RzYPRY5QYGYSUp");
 
 #[program]
 pub mod token_factory {
