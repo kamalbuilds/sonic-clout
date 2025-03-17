@@ -13,11 +13,11 @@ const Providers = ({ children }: { children: ReactNode }) => {
     });
 
     return (
-        <GlobalContextProvider>
-            <OrbisProvider defaultOrbis={orbis}>
+        <OrbisProvider defaultOrbis={orbis}>
+            <GlobalContextProvider>
                 {children}
-            </OrbisProvider>
-        </GlobalContextProvider>
+            </GlobalContextProvider>
+        </OrbisProvider>
     );
 };
 

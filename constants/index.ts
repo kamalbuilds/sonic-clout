@@ -1,1 +1,1 @@
-export const ORBIS_CONTEXT = 'kjzl6cwe1jw149wyjt3y8owwvl0fn33d1xyiiuk3shfu01sc5zz02ha8pbnnx0f'
+export const ORBIS_CONTEXT = process.env.NEXT_PUBLIC_ORBIS_CONTEXT as string;

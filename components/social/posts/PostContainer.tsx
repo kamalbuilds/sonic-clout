@@ -57,7 +57,7 @@ const PostContainer = ({ post }: { post: Post }) => {
                 <FeedContainer post={post} handleDisplayReplies={handleDisplayReplies} />
 
                 {/* Tokenization Button */}
-                {(!tokenAddress && post.creator === user.did) && (
+                {(!tokenAddress && post.creator === user?.did) && (
                     <div className="flex justify-end">
                         <Button
                             variant="glass"

@@ -8,31 +8,20 @@ import { Post } from '@/types';
 import PostContainer from './PostContainer';
 import { GlassCard } from '@/components/ui/glass-card';
 import ReplyContainer from './ReplyContainer';
+import { useGlobalContext } from '@/context/GlobalContext';
 
 const Posts = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const { orbis, user } = useOrbis();
-    const [posts, setPosts] = useState<Post[] | []>([]);
     const [error, setError] = useState();
+
+    const { fetchPosts, posts, loadingPosts } = useGlobalContext();
 
     const [selectedPostToReply, setSelectedPostToReply] = useState<Post | null>(null)
 
-    const loadPosts = async () => {
-        setIsLoading(true);
-        let { data, error } = await orbis.getPosts({ context: ORBIS_CONTEXT });
-
-        console.log("Posts ", data);
-
-        if (data) {
-            setPosts(data);
-        }
-        setIsLoading(false);
-        setError(error)
-    }
-
     useEffect(() => {
-        if (user) loadPosts();
+        if (user) fetchPosts(ORBIS_CONTEXT);
     }, [user])
 
     const samplePosts = [
@@ -74,7 +63,7 @@ const Posts = () => {
     return (
         <div className="space-y-4">
             <h2 className="text-xl font-bold">Posts</h2>
-            {isLoading ? (
+            {loadingPosts ? (
                 <LoadingCircle />
             ) : (
                 <>

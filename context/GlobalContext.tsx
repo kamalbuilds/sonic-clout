@@ -63,10 +63,10 @@ const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
 
 export default GlobalContextProvider
 
-export const useRewardsContext = () => {
+export const useGlobalContext = () => {
     const context = useContext(GlobalContext);
     if (context === undefined) {
-        throw new Error('useRewardsContext must be used within an RewardsContextProvider');
+        throw new Error('useGlobalContext must be used within an RewardsContextProvider');
     }
     return context;
 };

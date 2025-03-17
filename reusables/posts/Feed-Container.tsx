@@ -86,14 +86,11 @@ const FeedContainer = ({ post, handleDisplayReplies }: { post: Post, handleDispl
                 // Fetch from IPFS gateway
                 (async () => {
                     try {
-                        // Using Pinata gateway - you can replace with any IPFS gateway
-                        const gatewayUrl = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
+                        const res = await pinata.gateways.private.get(ipfsHash);
+                        if (res.data) {
+                            setMediaUrl(res.data as string);
+                        }
 
-                        // Alternatively, if you're using Pinata's API:
-                        // const res = await pinata.gateways.public.get(ipfsHash);
-                        // setMediaUrl(res.data as string);
-
-                        setMediaUrl(gatewayUrl);
                     } catch (error) {
                         console.log("Error fetching media from IPFS:", error);
                     } finally {

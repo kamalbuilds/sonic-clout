@@ -8,10 +8,11 @@ import { useOrbis } from "@orbisclub/components";
 import { ORBIS_CONTEXT } from '@/constants';
 import { LoadingCircle } from '../LoadingCircle';
 import { X } from 'lucide-react';
+import { useGlobalContext } from '@/context/GlobalContext';
+import { pinata } from '@/config/pinata';
 
-const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY || 'b69808f7f40f4e6047c2';
-const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY || 'e972e8f6cf851b6e3beb9d0abbd791341458bc13fcec041a66d924cf9d9933d5';
-
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY || '08cfe93a827cb51ceb2e';
+const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY || '82243dadbca59772dab1119066db44cc9d9acf03065d2821cfd06c0bd3e9853f';
 
 const CreatePost = () => {
 
@@ -26,6 +27,8 @@ const CreatePost = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+
+    const { fetchPosts } = useGlobalContext();
 
     const handleImageClick = () => {
         fileInputRef.current?.click();
@@ -65,32 +68,15 @@ const CreatePost = () => {
         }
     };
 
-    const uploadImageToIPFS = async (file: File): Promise<string | null> => {
+    const uploadImageToIPFS = async (imagePreview: string): Promise<string | null> => {
         try {
-            console.log("File >>>", file);
 
-            const formData = new FormData();
-            formData.append('file', file);
+            const fileToUpload = new File([imagePreview], `${imageFile?.name}.txt`, { type: "text/plain" });
 
-            const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'pinata_api_key': PINATA_API_KEY,
-                    'pinata_secret_api_key': PINATA_SECRET_KEY
-                },
-                body: formData,
-            });
+            const upload = await pinata.upload.private.file(fileToUpload);
 
-            if (!response.ok) {
-                throw new Error('Failed to upload image');
-            }
+            return `ipfs://${upload.cid}`
 
-            const data = await response.json();
-            console.log("data", data);
-
-            // Return the IPFS hash/CID
-            return `ipfs://${data.IpfsHash}`;
         } catch (error) {
             console.error('Error uploading image to IPFS:', error);
             return null;
@@ -109,9 +95,9 @@ const CreatePost = () => {
             let media = null;
 
             // Upload image if present
-            if (imageFile) {
+            if (imageFile && imagePreview) {
                 setUploadProgress(0);
-                const ipfsUrl = await uploadImageToIPFS(imageFile);
+                const ipfsUrl = await uploadImageToIPFS(imagePreview);
 
                 if (ipfsUrl) {
                     media = [{
@@ -135,6 +121,7 @@ const CreatePost = () => {
                 // Clear form after successful post
                 setPostText('');
                 removeImage();
+                fetchPosts(ORBIS_CONTEXT);
                 // You might want to trigger a refresh of the posts feed here
             } else {
                 alert('Failed to create post');
