@@ -1,23 +1,61 @@
 ---
-icon: bullseye-arrow
+description: Get started with SonicClout in minutes
 ---
 
 # Quickstart
 
-<figure><img src="https://gitbookio.github.io/onboarding-template-images/quickstart-hero.png" alt=""><figcaption></figcaption></figure>
+This guide will help you get started with SonicClout, a decentralized social content platform built on Solana.
 
-Beautiful documentation starts with the content you create — and GitBook makes it easy to get started with any pre-existing content.
+## Prerequisites
 
-{% hint style="info" %}
-Want to learn about writing content from scratch? Head to the [Basics](../basics/editor.md) section to learn more.
-{% endhint %}
+- A Solana wallet (Phantom, Solflare, etc.)
+- SOL tokens for gas fees
+- Creator account (optional for content creation)
 
-### Import
+## Step 1: Connect Your Wallet
 
-GitBook supports importing content from many popular writing tools and formats. If your content already exists, you can upload a file or group of files to be imported.
+1. Visit [sonicclout.io](https://sonicclout.io)
+2. Click the "Connect Wallet" button in the top right corner
+3. Select your preferred wallet (Phantom, Solflare, etc.)
+4. Approve the connection request in your wallet
 
-<div data-full-width="false"><figure><img src="https://gitbookio.github.io/onboarding-template-images/quickstart-import.png" alt=""><figcaption></figcaption></figure></div>
+## Step 2: Explore Available Content
 
-### Sync a repository
+After connecting your wallet, you can:
 
-GitBook also allows you to set up a bi-directional sync with an existing repository on GitHub or GitLab. Setting up Git Sync allows you and your team to write content in GitBook or in code, and never have to worry about your content becoming out of sync.
+- Browse tokenized content from creators
+- View trending posts and popular creators
+- Explore available content tokens for trading
+
+## Step 3: Trade Content Tokens
+
+1. Navigate to the "Trading" section
+2. Select a token pair from the available options
+3. Enter the amount you wish to trade
+4. Review and confirm the transaction details
+5. Approve the transaction in your wallet
+
+## Step 4: Create Your Content (Creators)
+
+1. Visit your profile page
+2. Click "Create New Content"
+3. Upload your content and add relevant metadata
+4. Set tokenization parameters (supply, name, symbol)
+5. Confirm the creation by approving the transaction
+
+## Step 5: Set Up Vesting (Creators)
+
+For creators who want to set up token vesting based on social metrics:
+
+1. Go to the "Vesting" section in your profile
+2. Click "Create New Vesting Schedule"
+3. Select the metrics (followers, views, likes)
+4. Set milestone thresholds and corresponding token percentages
+5. Confirm by approving the transaction
+
+## Next Steps
+
+- [Connect additional wallets](connecting-wallet.md)
+- [Learn about content tokenization](../basics/content-tokenization.md)
+- [Understand skill-based vesting](../basics/skill-based-vesting.md)
+- [Explore trading features](../basics/trading-features.md)
