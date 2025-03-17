@@ -3,6 +3,7 @@
 * [Welcome to SonicClout](README.md)
 * [Business Plan](business-plan.md)
 * [Development Roadmap](roadmap.md)
+* [Meet the Team](team.md)
 
 ## Getting Started
 

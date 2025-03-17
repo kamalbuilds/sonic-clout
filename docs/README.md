@@ -53,6 +53,13 @@ We have an ambitious but achievable plan for bringing SonicClout to market. Our 
 3. **Expansion** (Q3 2025 - Q2 2026) - Advanced products and market expansion
 4. **Maturity** (Q3 2026 onwards) - Full financial ecosystem and governance
 
+## Leadership Team
+
+SonicClout is led by a team of experienced blockchain entrepreneurs and developers with a proven track record of building successful web3 products. [Meet our team](team.md) to learn more about the founders who are bringing this vision to life:
+
+* **Kamal Nayan Singh** - Founder & CEO, with 5+ years of blockchain development experience and 35+ hackathon wins
+* **Abhishek** - CTO, bringing 3+ years of blockchain development expertise and technical leadership from Push Protocol
+
 ### Jump right in
 
 <table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Getting Started</strong></td><td>Start using SonicClout</td><td></td><td></td><td><a href="getting-started/quickstart.md">quickstart.md</a></td></tr><tr><td><strong>Smart Contracts</strong></td><td>Learn about our Anchor programs</td><td></td><td></td><td><a href="basics/smart-contracts.md">smart-contracts.md</a></td></tr><tr><td><strong>Trading Features</strong></td><td>Understand SEGA protocol</td><td></td><td></td><td><a href="basics/trading-features.md">trading-features.md</a></td></tr></tbody></table>
