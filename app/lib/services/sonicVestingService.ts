@@ -7,158 +7,192 @@ import {
   SystemProgram,
   sendAndConfirmTransaction
 } from '@solana/web3.js';
-import { Program, AnchorProvider, web3, BN, Wallet } from '@coral-xyz/anchor';
-import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '@solana/spl-token';
+import { Program, AnchorProvider, web3, BN, Wallet, Idl } from '@coral-xyz/anchor';
+import { 
+  TOKEN_PROGRAM_ID, 
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountIdempotentInstruction,
+  getAssociatedTokenAddressSync
+} from '@solana/spl-token';
 import { Buffer } from 'buffer';
+
+// Define interfaces for our Solana program account types
+interface VestingStateAccount {
+  authority: PublicKey;
+  vestingIdCounter: BN;
+}
+
+interface MilestoneData {
+  threshold: BN;
+  unlockPercentage: BN;
+  reached: boolean;
+}
+
+interface VestingScheduleAccount {
+  creator: PublicKey;
+  tokenMint: PublicKey;
+  totalAmount: BN;
+  unlockedAmount: BN;
+  oracleAddress: PublicKey;
+  metricType: string;
+  active: boolean;
+  vestingId: BN;
+  milestones: MilestoneData[];
+}
+
+interface CreatorVestingsAccount {
+  creator: PublicKey;
+  vestingIds: BN[];
+}
 
 // Load IDL - In production you'd import the IDL from the build output
 // This is a placeholder IDL structure based on the contract code
-const SKILL_VESTING_IDL = {
-  "version": "0.1.0",
-  "name": "skill_vesting",
-  "instructions": [
+const SKILL_VESTING_IDL: Idl = {
+  version: "0.1.0",
+  name: "skill_vesting",
+  instructions: [
     {
-      "name": "initialize",
-      "accounts": [
-        { "name": "vestingState", "isMut": true, "isSigner": true },
-        { "name": "authority", "isMut": true, "isSigner": true },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      name: "initialize",
+      accounts: [
+        { name: "vestingState", isMut: true, isSigner: true },
+        { name: "authority", isMut: true, isSigner: true },
+        { name: "systemProgram", isMut: false, isSigner: false }
       ],
-      "args": []
+      args: []
     },
     {
-      "name": "createVesting",
-      "accounts": [
-        { "name": "vestingState", "isMut": true, "isSigner": false },
-        { "name": "vestingSchedule", "isMut": true, "isSigner": true },
-        { "name": "creatorVestings", "isMut": true, "isSigner": false },
-        { "name": "tokenMint", "isMut": false, "isSigner": false },
-        { "name": "tokenFrom", "isMut": true, "isSigner": false },
-        { "name": "tokenVault", "isMut": true, "isSigner": false },
-        { "name": "tokenVaultAuthority", "isMut": false, "isSigner": false },
-        { "name": "oracle", "isMut": false, "isSigner": false },
-        { "name": "creator", "isMut": true, "isSigner": true },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false },
-        { "name": "rent", "isMut": false, "isSigner": false }
+      name: "createVesting",
+      accounts: [
+        { name: "vestingState", isMut: true, isSigner: false },
+        { name: "vestingSchedule", isMut: true, isSigner: true },
+        { name: "creatorVestings", isMut: true, isSigner: false },
+        { name: "tokenMint", isMut: false, isSigner: false },
+        { name: "tokenFrom", isMut: true, isSigner: false },
+        { name: "tokenVault", isMut: true, isSigner: false },
+        { name: "tokenVaultAuthority", isMut: false, isSigner: false },
+        { name: "oracle", isMut: false, isSigner: false },
+        { name: "creator", isMut: true, isSigner: true },
+        { name: "tokenProgram", isMut: false, isSigner: false },
+        { name: "systemProgram", isMut: false, isSigner: false },
+        { name: "rent", isMut: false, isSigner: false }
       ],
-      "args": [
-        { "name": "amount", "type": "u64" },
-        { "name": "metricType", "type": "string" },
-        { "name": "thresholds", "type": {"array": ["u64"]} },
-        { "name": "unlockPercentages", "type": {"array": ["u64"]} }
+      args: [
+        { name: "amount", type: "u64" },
+        { name: "metricType", type: "string" },
+        { name: "thresholds", type: { array: ["u64"] } },
+        { name: "unlockPercentages", type: { array: ["u64"] } }
       ]
     },
     {
-      "name": "checkMilestones",
-      "accounts": [
-        { "name": "vestingSchedule", "isMut": true, "isSigner": false },
-        { "name": "oracle", "isMut": false, "isSigner": false },
-        { "name": "signer", "isMut": false, "isSigner": true }
+      name: "checkMilestones",
+      accounts: [
+        { name: "vestingSchedule", isMut: true, isSigner: false },
+        { name: "oracle", isMut: false, isSigner: false },
+        { name: "signer", isMut: false, isSigner: true }
       ],
-      "args": []
+      args: []
     },
     {
-      "name": "withdrawUnlocked",
-      "accounts": [
-        { "name": "vestingSchedule", "isMut": true, "isSigner": false },
-        { "name": "tokenVault", "isMut": true, "isSigner": false },
-        { "name": "tokenVaultAuthority", "isMut": false, "isSigner": false },
-        { "name": "tokenTo", "isMut": true, "isSigner": false },
-        { "name": "oracle", "isMut": false, "isSigner": false },
-        { "name": "creator", "isMut": true, "isSigner": true },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      name: "withdrawUnlocked",
+      accounts: [
+        { name: "vestingSchedule", isMut: true, isSigner: false },
+        { name: "tokenVault", isMut: true, isSigner: false },
+        { name: "tokenVaultAuthority", isMut: false, isSigner: false },
+        { name: "tokenTo", isMut: true, isSigner: false },
+        { name: "oracle", isMut: false, isSigner: false },
+        { name: "creator", isMut: true, isSigner: true },
+        { name: "tokenProgram", isMut: false, isSigner: false }
       ],
-      "args": []
+      args: []
     }
   ],
-  "accounts": [
+  accounts: [
     {
-      "name": "VestingState",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          { "name": "authority", "type": "publicKey" },
-          { "name": "vestingIdCounter", "type": "u64" }
+      name: "VestingState",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "authority", type: "publicKey" },
+          { name: "vestingIdCounter", type: "u64" }
         ]
       }
     },
     {
-      "name": "VestingSchedule",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          { "name": "creator", "type": "publicKey" },
-          { "name": "tokenMint", "type": "publicKey" },
-          { "name": "totalAmount", "type": "u64" },
-          { "name": "unlockedAmount", "type": "u64" },
-          { "name": "oracleAddress", "type": "publicKey" },
-          { "name": "metricType", "type": "string" },
-          { "name": "active", "type": "bool" },
-          { "name": "vestingId", "type": "u64" },
-          { "name": "milestones", "type": { "array": [{ "defined": "Milestone" }] } }
+      name: "VestingSchedule",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "creator", type: "publicKey" },
+          { name: "tokenMint", type: "publicKey" },
+          { name: "totalAmount", type: "u64" },
+          { name: "unlockedAmount", type: "u64" },
+          { name: "oracleAddress", type: "publicKey" },
+          { name: "metricType", type: "string" },
+          { name: "active", type: "bool" },
+          { name: "vestingId", type: "u64" },
+          { name: "milestones", type: { array: [{ defined: "Milestone" }] } }
         ]
       }
     },
     {
-      "name": "CreatorVestings",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          { "name": "creator", "type": "publicKey" },
-          { "name": "vestingIds", "type": {"array": ["u64"]} }
+      name: "CreatorVestings",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "creator", type: "publicKey" },
+          { name: "vestingIds", type: { array: ["u64"] } }
         ]
       }
     }
   ],
-  "types": [
+  types: [
     {
-      "name": "Milestone",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          { "name": "threshold", "type": "u64" },
-          { "name": "unlockPercentage", "type": "u64" }, 
-          { "name": "reached", "type": "bool" }
+      name: "Milestone",
+      type: {
+        kind: "struct",
+        fields: [
+          { name: "threshold", type: "u64" },
+          { name: "unlockPercentage", type: "u64" }, 
+          { name: "reached", type: "bool" }
         ]
       }
     }
   ],
-  "events": [
+  events: [
     {
-      "name": "VestingCreatedEvent",
-      "fields": [
-        { "name": "vestingId", "type": "u64", "index": false },
-        { "name": "creator", "type": "publicKey", "index": false },
-        { "name": "tokenAddress", "type": "publicKey", "index": false },
-        { "name": "totalAmount", "type": "u64", "index": false }
+      name: "VestingCreatedEvent",
+      fields: [
+        { name: "vestingId", type: "u64", index: false },
+        { name: "creator", type: "publicKey", index: false },
+        { name: "tokenAddress", type: "publicKey", index: false },
+        { name: "totalAmount", type: "u64", index: false }
       ]
     },
     {
-      "name": "MilestoneReachedEvent",
-      "fields": [
-        { "name": "vestingId", "type": "u64", "index": false },
-        { "name": "milestoneIndex", "type": "u64", "index": false },
-        { "name": "unlockedAmount", "type": "u64", "index": false }
+      name: "MilestoneReachedEvent",
+      fields: [
+        { name: "vestingId", type: "u64", index: false },
+        { name: "milestoneIndex", type: "u64", index: false },
+        { name: "unlockedAmount", type: "u64", index: false }
       ]
     },
     {
-      "name": "TokensWithdrawnEvent",
-      "fields": [
-        { "name": "vestingId", "type": "u64", "index": false },
-        { "name": "creator", "type": "publicKey", "index": false },
-        { "name": "amount", "type": "u64", "index": false }
+      name: "TokensWithdrawnEvent",
+      fields: [
+        { name: "vestingId", type: "u64", index: false },
+        { name: "creator", type: "publicKey", index: false },
+        { name: "amount", type: "u64", index: false }
       ]
     }
   ],
-  "errors": [
-    { "code": 6000, "name": "ArrayLengthMismatch", "msg": "Arrays must be the same length" },
-    { "code": 6001, "name": "NoMilestones", "msg": "Must have at least one milestone" },
-    { "code": 6002, "name": "TotalPercentageExceeded", "msg": "Total percentage cannot exceed 100%" },
-    { "code": 6003, "name": "VestingNotActive", "msg": "Vesting schedule not active" },
-    { "code": 6004, "name": "NoNewMilestonesReached", "msg": "No new milestones reached" },
-    { "code": 6005, "name": "OnlyCreatorCanWithdraw", "msg": "Only creator can withdraw" },
-    { "code": 6006, "name": "NoTokensToWithdraw", "msg": "No tokens to withdraw" }
+  errors: [
+    { code: 6000, name: "ArrayLengthMismatch", msg: "Arrays must be the same length" },
+    { code: 6001, name: "NoMilestones", msg: "Must have at least one milestone" },
+    { code: 6002, name: "TotalPercentageExceeded", msg: "Total percentage cannot exceed 100%" },
+    { code: 6003, name: "VestingNotActive", msg: "Vesting schedule not active" },
+    { code: 6004, name: "NoNewMilestonesReached", msg: "No new milestones reached" },
+    { code: 6005, name: "OnlyCreatorCanWithdraw", msg: "Only creator can withdraw" },
+    { code: 6006, name: "NoTokensToWithdraw", msg: "No tokens to withdraw" }
   ]
 };
 
@@ -284,7 +318,9 @@ export async function createVesting(
     
     // Get the vesting state - in a real implementation, you would likely store this after initialization
     const [vestingStatePDA] = await getVestingStatePDA(program.programId);
-    const vestingStateAccount = await program.account.vestingState.fetch(vestingStatePDA);
+    
+    // Fetch the vesting state account
+    const vestingStateAccount = await program.account.vestingState.fetch(vestingStatePDA) as VestingStateAccount;
     
     // Get next vesting ID
     const nextVestingId = vestingStateAccount.vestingIdCounter.addn(1);
@@ -309,7 +345,7 @@ export async function createVesting(
     
     // Get the token account for the user
     const tokenMint = new PublicKey(params.tokenMintAddress);
-    const userTokenAccount = await getAssociatedTokenAddress(
+    const userTokenAccount = getAssociatedTokenAddressSync(
       tokenMint,
       wallet.publicKey
     );
@@ -365,7 +401,7 @@ export async function checkMilestones(
     
     // Fetch all vesting schedules belonging to the user
     const [creatorVestingsPDA] = await getCreatorVestingsPDA(wallet.publicKey, program.programId);
-    const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA);
+    const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA) as CreatorVestingsAccount;
     
     // Get vesting schedule public key from ID - this is simplified
     // In a real implementation, you would use the vestingId to query the correct account
@@ -404,7 +440,7 @@ export async function checkMilestones(
     console.error('Error checking milestones:', error);
     
     // Check for specific error
-    if (error.toString().includes('NoNewMilestonesReached')) {
+    if (error instanceof Error && error.toString().includes('NoNewMilestonesReached')) {
       return false;
     }
     
@@ -437,7 +473,7 @@ export async function withdrawUnlocked(
     }
     
     const vestingScheduleAccount = vestingScheduleAccounts[0];
-    const vestingSchedule = vestingScheduleAccount.account;
+    const vestingSchedule = vestingScheduleAccount.account as VestingScheduleAccount;
     
     // Derive the token vault PDA
     const [tokenVault] = await PublicKey.findProgramAddress(
@@ -453,7 +489,7 @@ export async function withdrawUnlocked(
     
     // Get the token account for the user
     const tokenMint = vestingSchedule.tokenMint;
-    const userTokenAccount = await getAssociatedTokenAddress(
+    const userTokenAccount = getAssociatedTokenAddressSync(
       tokenMint,
       wallet.publicKey
     );
@@ -465,7 +501,7 @@ export async function withdrawUnlocked(
     let instructions = [];
     if (!accountInfo) {
       instructions.push(
-        createAssociatedTokenAccountInstruction(
+        createAssociatedTokenAccountIdempotentInstruction(
           wallet.publicKey,
           userTokenAccount,
           wallet.publicKey,
@@ -521,12 +557,12 @@ export async function getVestingSchedule(
       throw new Error(`Vesting schedule with ID ${vestingId} not found`);
     }
     
-    const vestingScheduleAccount = vestingScheduleAccounts[0].account;
+    const vestingScheduleAccount = vestingScheduleAccounts[0].account as VestingScheduleAccount;
     
     // Format the milestone data
-    const thresholds = vestingScheduleAccount.milestones.map(m => m.threshold.toNumber());
-    const unlockPercentages = vestingScheduleAccount.milestones.map(m => m.unlockPercentage.toNumber());
-    const reached = vestingScheduleAccount.milestones.map(m => m.reached);
+    const thresholds = vestingScheduleAccount.milestones.map((m) => m.threshold.toNumber());
+    const unlockPercentages = vestingScheduleAccount.milestones.map((m) => m.unlockPercentage.toNumber());
+    const reached = vestingScheduleAccount.milestones.map((m) => m.reached);
     
     return {
       id: vestingScheduleAccount.vestingId.toNumber(),
@@ -564,8 +600,8 @@ export async function getCreatorVestings(
     const [creatorVestingsPDA] = await getCreatorVestingsPDA(creatorPublicKey, program.programId);
     
     try {
-      const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA);
-      return creatorVestings.vestingIds.map(id => id.toNumber());
+      const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA) as CreatorVestingsAccount;
+      return creatorVestings.vestingIds.map((id) => id.toNumber());
     } catch (e) {
       // If the account doesn't exist, return an empty array
       return [];

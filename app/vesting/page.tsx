@@ -1,108 +1,66 @@
 "use client";
 
 import React from 'react';
-import { VestingDashboard } from '@/components/vesting/vesting-dashboard';
+import { SonicVestingProvider } from '@/context/SonicVestingContext';
+import VestingDashboard from '@/components/vesting/VestingDashboard';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function VestingPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Skill Vesting</h1>
+        <h1 className="text-3xl font-bold mb-2">Sonic Skill Vesting</h1>
         <p className="text-white-400">
-          Manage your vesting schedules tied to your social metrics and content performance.
-          Earn tokens as you reach follower and view milestones.
+          Manage your token vesting schedules that unlock based on social media metrics like followers, views, and engagement.
         </p>
       </div>
       
-      <VestingDashboard />
+      <SonicVestingProvider>
+        <VestingDashboard />
+      </SonicVestingProvider>
       
-      <div className="mt-8 bg-white/5 rounded-lg p-6 border border-white/10">
-        <h2 className="text-xl font-bold mb-4">How Skill Vesting Works</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">1</div>
-              <h3 className="font-semibold">Create a Vesting Schedule</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              Lock your tokens and set milestones based on followers, views, or engagement.
+      <div className="mt-12 grid md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>About Skill Vesting</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm">
+              Skill Vesting lets you create token vesting schedules where tokens unlock based on 
+              reaching specific social media metric thresholds, like follower counts or content views.
             </p>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center font-bold">2</div>
-              <h3 className="font-semibold">Track Your Progress</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              As you gain followers and views, check your progress toward each milestone.
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>How It Works</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="space-y-2 text-sm list-decimal pl-4">
+              <li>Create a vesting schedule with your chosen token</li>
+              <li>Set milestone thresholds based on metrics (e.g., 1K, 5K, 10K followers)</li>
+              <li>As you reach milestones, tokens unlock automatically</li>
+              <li>Withdraw your unlocked tokens to your wallet</li>
+            </ol>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Powered by Solana</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm">
+              This vesting mechanism runs on Solana for fast, low-cost transactions, using 
+              on-chain oracle data to verify your social media metrics and unlock tokens as 
+              you hit milestones.
             </p>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold">3</div>
-              <h3 className="font-semibold">Claim Your Tokens</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              Once you reach milestones, claim your unlocked tokens to your wallet.
+            <p className="text-xs mt-4 text-white-300">
+              Contract Address: <span className="font-mono">DeBYJGUnhGxwxGUg9UmT4LPyTNKvN2Nf5o2GnCLnRmVC</span>
             </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-} 
-
-import React from 'react';
-import { VestingDashboard } from '@/components/vesting/vesting-dashboard';
-
-export default function VestingPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Skill Vesting</h1>
-        <p className="text-white-400">
-          Manage your vesting schedules tied to your social metrics and content performance.
-          Earn tokens as you reach follower and view milestones.
-        </p>
-      </div>
-      
-      <VestingDashboard />
-      
-      <div className="mt-8 bg-white/5 rounded-lg p-6 border border-white/10">
-        <h2 className="text-xl font-bold mb-4">How Skill Vesting Works</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">1</div>
-              <h3 className="font-semibold">Create a Vesting Schedule</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              Lock your tokens and set milestones based on followers, views, or engagement.
-            </p>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center font-bold">2</div>
-              <h3 className="font-semibold">Track Your Progress</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              As you gain followers and views, check your progress toward each milestone.
-            </p>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold">3</div>
-              <h3 className="font-semibold">Claim Your Tokens</h3>
-            </div>
-            <p className="text-sm text-white-400">
-              Once you reach milestones, claim your unlocked tokens to your wallet.
-            </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
