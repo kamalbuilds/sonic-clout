@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use std::mem::size_of;
 
-declare_id!("SonicBondsProgram111111111111111111111111111111");
+declare_id!("6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6");
 
 #[program]
 pub mod sonic_bonds {
@@ -41,7 +41,7 @@ pub mod sonic_bonds {
         let bond = &mut ctx.accounts.bond;
         bond.id = bond_id;
         bond.creator = ctx.accounts.creator.key();
-        bond.name = name;
+        bond.name = name.clone();
         bond.description = description;
         bond.category = category;
         bond.metric = metric;
@@ -70,7 +70,7 @@ pub mod sonic_bonds {
         emit!(BondCreatedEvent {
             bond_id,
             creator: ctx.accounts.creator.key(),
-            name: name.clone(),
+            name,
             total_supply,
             initial_price,
         });
@@ -172,12 +172,11 @@ pub mod sonic_bonds {
             let payment_amount = amount.checked_mul(bond.price).unwrap();
             
             // Transfer payment from vault to seller
-            let vault_authority_bump = *ctx.bumps.get("vault_authority").unwrap();
-            let authority_seeds = &[
-                b"vault_authority",
-                &[vault_authority_bump]
+            let vault_authority_seeds = &[
+                b"vault_authority".as_ref(),
+                &[ctx.bumps.vault_authority]
             ];
-            let signer = &[&authority_seeds[..]];
+            let signer = &[&vault_authority_seeds[..]];
 
             let cpi_accounts = Transfer {
                 from: ctx.accounts.vault.to_account_info(),
@@ -224,6 +223,7 @@ pub struct Initialize<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(name: String, description: String, category: String, metric: String)]
 pub struct CreateBond<'info> {
     #[account(mut)]
     pub bonds_state: Account<'info, BondsState>,
@@ -247,7 +247,7 @@ pub struct CreateBond<'info> {
     pub market: Account<'info, Market>,
     
     #[account(
-        init_if_needed,
+        init,
         payer = creator,
         space = 8 + size_of::<CreatorBonds>() +
                 4 + (8 * 50), // bond_ids: Vec<u64> (max 50 bonds)

@@ -10,14 +10,15 @@ seeds = false
 [programs.devnet]
 skill_vesting = "DeBYJGUnhGxwxGUg9UmT4LPyTNKvN2Nf5o2GnCLnRmVC"
 token_factory = "AVm9YvzuJqqKCJY6YCwkFiEVes9WX2qpsvmkJAPeNkWF"
+sonic_bonds = "6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6"
 
 [programs."https://api.testnet.sonic.game"]
-sonic_bonds = "CYzjF3DqR84EV4GrHWWzUeRaH6b4G8zYULdk8h3561XZ"
+sonic_bonds = "6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6"
 
 [programs.localnet]
 token_factory = "SPLEZkhJTqLPgAB4wDUMTVnPTyCBTCUULYAjK6SxEKib"
 skill_vesting = "SkLvStvncgAwXjKWnNVEF7MWZXkAF1MJ6Wkdynds8nqN"
-sonic_bonds = "SonicBondsProgram111111111111111111111111111111"
+sonic_bonds = "6vQd5xYpSYgVksYas7H8KNy6jVxS4kf8BH5Sd6PNGNJ6"
 
 [registry]
 url = "https://api.apr.dev"
