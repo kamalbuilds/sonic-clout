@@ -4,44 +4,40 @@ import React, { useEffect, useState } from 'react';
 import { GlassCard } from '../ui/glass-card';
 import { Button } from '../ui/button';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { ethers } from 'ethers';
 import { toast } from 'react-hot-toast';
 import { LoadingCircle } from '../LoadingCircle';
-import { getCreatorVestings, getVestingSchedule, checkMilestones, withdrawUnlocked, VestingSchedule } from '@/app/lib/services/vestingService';
+import { 
+  getCreatorVestings, 
+  getVestingSchedule, 
+  checkMilestones, 
+  withdrawUnlocked, 
+  VestingSchedule 
+} from '@/app/lib/services/sonicVestingService';
 import { CreateVesting } from './create-vesting';
+import { PublicKey } from '@solana/web3.js';
 
 export const VestingDashboard: React.FC = () => {
-  const { publicKey, signTransaction } = useWallet();
+  const wallet = useWallet();
   const [vestingSchedules, setVestingSchedules] = useState<VestingSchedule[]>([]);
   const [loadingSchedules, setLoadingSchedules] = useState(false);
   const [checkedMilestones, setCheckedMilestones] = useState<Record<number, boolean>>({});
   const [isWithdrawing, setIsWithdrawing] = useState<Record<number, boolean>>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
   
-  // Mock provider for demo purposes
-  const getProvider = () => {
-    return new ethers.JsonRpcProvider("https://rpc.mainnet-alpha.sonic.game");
-  };
-  
-  // Mock signer for demo purposes
-  const getSigner = () => {
-    return new ethers.Wallet('0x' + Array(64).fill('0').join(''), getProvider());
-  };
-  
   const loadVestingSchedules = async () => {
-    if (!publicKey) return;
+    if (!wallet.publicKey) return;
     
     try {
       setLoadingSchedules(true);
-      const provider = getProvider();
       
-      // Use mock address for demo
-      const creatorAddress = '0x' + Array(40).fill('0').join('');
-      
-      const vestingIds = await getCreatorVestings(creatorAddress, provider);
+      // Get vesting IDs for this creator
+      const vestingIds = await getCreatorVestings(
+        wallet.publicKey.toString(),
+        wallet
+      );
       
       const schedules = await Promise.all(
-        vestingIds.map(id => getVestingSchedule(id, provider))
+        vestingIds.map(id => getVestingSchedule(id, wallet))
       );
       
       setVestingSchedules(schedules);
@@ -54,23 +50,21 @@ export const VestingDashboard: React.FC = () => {
   };
   
   useEffect(() => {
-    if (publicKey) {
+    if (wallet.publicKey) {
       loadVestingSchedules();
     }
-  }, [publicKey]);
+  }, [wallet.publicKey]);
   
   const handleCheckMilestones = async (vestingId: number) => {
     try {
       setCheckedMilestones(prev => ({ ...prev, [vestingId]: true }));
       
-      const signer = getSigner();
-      const reached = await checkMilestones(vestingId, signer);
+      const reached = await checkMilestones(vestingId, wallet);
       
       if (reached) {
         toast.success('New milestone reached!');
         // Reload the vesting schedule to show updated state
-        const provider = getProvider();
-        const updatedSchedule = await getVestingSchedule(vestingId, provider);
+        const updatedSchedule = await getVestingSchedule(vestingId, wallet);
         
         setVestingSchedules(prev => 
           prev.map(schedule => schedule.id === vestingId ? updatedSchedule : schedule)
@@ -90,14 +84,12 @@ export const VestingDashboard: React.FC = () => {
     try {
       setIsWithdrawing(prev => ({ ...prev, [vestingId]: true }));
       
-      const signer = getSigner();
-      const amount = await withdrawUnlocked(vestingId, signer);
+      const txSignature = await withdrawUnlocked(vestingId, wallet);
       
-      toast.success(`Successfully withdrawn ${amount} tokens!`);
+      toast.success('Successfully withdrawn tokens!');
       
       // Reload the vesting schedule to show updated state
-      const provider = getProvider();
-      const updatedSchedule = await getVestingSchedule(vestingId, provider);
+      const updatedSchedule = await getVestingSchedule(vestingId, wallet);
       
       setVestingSchedules(prev => 
         prev.map(schedule => schedule.id === vestingId ? updatedSchedule : schedule)
@@ -116,8 +108,7 @@ export const VestingDashboard: React.FC = () => {
     
     // Add the new schedule to the list
     try {
-      const provider = getProvider();
-      const newSchedule = await getVestingSchedule(vestingId, provider);
+      const newSchedule = await getVestingSchedule(vestingId, wallet);
       setVestingSchedules(prev => [...prev, newSchedule]);
     } catch (error) {
       console.error('Error loading new vesting schedule:', error);
@@ -126,16 +117,16 @@ export const VestingDashboard: React.FC = () => {
   
   // For demo purposes, add mock vesting schedules if none are loaded
   useEffect(() => {
-    if (!loadingSchedules && vestingSchedules.length === 0 && publicKey) {
+    if (!loadingSchedules && vestingSchedules.length === 0 && wallet.publicKey) {
       // Add mock schedules for UI demonstration
       setVestingSchedules([
         {
           id: 1,
-          creator: publicKey.toBase58(),
-          tokenAddress: '0x1234567890123456789012345678901234567890',
+          creator: wallet.publicKey.toString(),
+          tokenMintAddress: 'TokenMint11111111111111111111111111111111111',
           totalAmount: '10000',
           unlockedAmount: '2000',
-          oracleAddress: '0x2345678901234567890123456789012345678901',
+          oracleAddress: 'OraCLEAddr1111111111111111111111111111111111',
           metricType: 'followers',
           active: true,
           milestones: {
@@ -146,9 +137,13 @@ export const VestingDashboard: React.FC = () => {
         }
       ]);
     }
-  }, [loadingSchedules, vestingSchedules, publicKey]);
+  }, [loadingSchedules, vestingSchedules, wallet.publicKey]);
   
-  if (!publicKey) {
+  const formatTokenAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+  
+  if (!wallet.publicKey) {
     return (
       <GlassCard className="p-5">
         <div className="text-center py-8">
@@ -196,11 +191,11 @@ export const VestingDashboard: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <div className="text-sm text-white-400">Token</div>
-                    <div className="font-semibold truncate">{schedule.tokenAddress}</div>
+                    <div className="font-semibold truncate">{formatTokenAddress(schedule.tokenMintAddress)}</div>
                   </div>
                   <div>
                     <div className="text-sm text-white-400">Total Amount</div>
-                    <div className="font-semibold">{schedule.totalAmount}</div>
+                    <div className="font-semibold">{parseInt(schedule.totalAmount).toLocaleString()}</div>
                   </div>
                   <div>
                     <div className="text-sm text-white-400">Metric Type</div>
@@ -208,7 +203,9 @@ export const VestingDashboard: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-sm text-white-400">Unlocked Amount</div>
-                    <div className="font-semibold text-green-400">{schedule.unlockedAmount}</div>
+                    <div className="font-semibold text-green-400">
+                      {parseInt(schedule.unlockedAmount).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 
@@ -240,7 +237,7 @@ export const VestingDashboard: React.FC = () => {
                     variant="glass"
                     size="sm"
                     onClick={() => handleCheckMilestones(schedule.id)}
-                    disabled={checkedMilestones[schedule.id]}
+                    disabled={checkedMilestones[schedule.id] || !wallet.connected}
                   >
                     {checkedMilestones[schedule.id] ? (
                       <>
@@ -257,7 +254,11 @@ export const VestingDashboard: React.FC = () => {
                     gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
                     size="sm"
                     onClick={() => handleWithdraw(schedule.id)}
-                    disabled={isWithdrawing[schedule.id] || Number(schedule.unlockedAmount) <= 0}
+                    disabled={
+                      isWithdrawing[schedule.id] || 
+                      Number(schedule.unlockedAmount) <= 0 || 
+                      !wallet.connected
+                    }
                   >
                     {isWithdrawing[schedule.id] ? (
                       <>

@@ -1,6 +1,25 @@
-// @ts-nocheck
+/**
+ * @deprecated This file uses ethers.js for Ethereum integration which is no longer supported.
+ * Please use sonicVestingService.ts for Solana integration.
+ * 
+ * Example usage:
+ * ```
+ * import { 
+ *   createVesting, 
+ *   checkMilestones, 
+ *   withdrawUnlocked, 
+ *   getVestingSchedule 
+ * } from '@/app/lib/services/sonicVestingService';
+ * ```
+ */
+
+// NOTE: This file is kept for reference purposes only and should not be used in new code.
+// All new development should use the Solana integration in sonicVestingService.ts
+
+// @ts-ignore: Intentionally keeping ethers reference for backwards compatibility
 import { ethers } from 'ethers';
 
+// @ts-ignore: This import may not exist anymore, keeping for reference
 import SkillVestingABI from '../../../abi/SkillVesting.json';
 
 // Contract address will need to be updated after deployment
@@ -40,14 +59,21 @@ export interface VestingSchedule {
   };
 }
 
+/**
+ * @deprecated Use createVesting from sonicVestingService.ts instead
+ */
 export async function createVesting(
   params: VestingParams,
-  signer: ethers.Signer
+  // @ts-ignore: Using any to prevent ethers dependency errors
+  signer: any
 ): Promise<number> {
+  console.warn("DEPRECATED: Please use createVesting from sonicVestingService.ts instead");
   try {
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const vestingContract = new ethers.Contract(SKILL_VESTING_ADDRESS, SkillVestingABI.abi, signer);
     
     // Approve token transfer first
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const tokenContract = new ethers.Contract(
       params.tokenAddress,
       ['function approve(address spender, uint256 amount) public returns (bool)'],
@@ -75,7 +101,7 @@ export async function createVesting(
     
     // Extract vesting ID from event logs
     const event = receipt?.logs?.find(
-      (log) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('VestingCreated').format())
+      (log: any) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('VestingCreated').format())
     );
     
     if (event) {
@@ -93,19 +119,25 @@ export async function createVesting(
   }
 }
 
+/**
+ * @deprecated Use checkMilestones from sonicVestingService.ts instead
+ */
 export async function checkMilestones(
   vestingId: number,
-  signer: ethers.Signer
+  // @ts-ignore: Using any to prevent ethers dependency errors
+  signer: any
 ): Promise<boolean> {
+  console.warn("DEPRECATED: Please use checkMilestones from sonicVestingService.ts instead");
   try {
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const vestingContract = new ethers.Contract(SKILL_VESTING_ADDRESS, SkillVestingABI.abi, signer);
     const tx = await vestingContract.checkMilestones(vestingId);
     const receipt = await tx.wait();
     
     // Check if any MilestoneReached events were emitted
     const events = receipt?.logs?.filter(
-      (log) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('MilestoneReached').format())
-    ).map((log) => {
+      (log: any) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('MilestoneReached').format())
+    ).map((log: any) => {
       if (!log) return null;
       return vestingContract.interface.parseLog({
         topics: log.topics,
@@ -120,18 +152,24 @@ export async function checkMilestones(
   }
 }
 
+/**
+ * @deprecated Use withdrawUnlocked from sonicVestingService.ts instead
+ */
 export async function withdrawUnlocked(
   vestingId: number,
-  signer: ethers.Signer
+  // @ts-ignore: Using any to prevent ethers dependency errors
+  signer: any
 ): Promise<string> {
+  console.warn("DEPRECATED: Please use withdrawUnlocked from sonicVestingService.ts instead");
   try {
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const vestingContract = new ethers.Contract(SKILL_VESTING_ADDRESS, SkillVestingABI.abi, signer);
     const tx = await vestingContract.withdrawUnlocked(vestingId);
     const receipt = await tx.wait();
     
     // Extract withdrawal amount from event logs
     const event = receipt?.logs?.find(
-      (log) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('TokensWithdrawn').format())
+      (log: any) => log?.topics?.[0] === ethers.id(vestingContract.interface.getEvent('TokensWithdrawn').format())
     );
     
     if (event) {
@@ -149,11 +187,17 @@ export async function withdrawUnlocked(
   }
 }
 
+/**
+ * @deprecated Use getVestingSchedule from sonicVestingService.ts instead
+ */
 export async function getVestingSchedule(
   vestingId: number,
-  provider: ethers.Provider
+  // @ts-ignore: Using any to prevent ethers dependency errors
+  provider: any
 ): Promise<VestingSchedule> {
+  console.warn("DEPRECATED: Please use getVestingSchedule from sonicVestingService.ts instead");
   try {
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const vestingContract = new ethers.Contract(SKILL_VESTING_ADDRESS, SkillVestingABI.abi, provider);
     
     // Get vesting details
@@ -172,8 +216,8 @@ export async function getVestingSchedule(
       metricType: details[5],
       active: details[6],
       milestones: {
-        thresholds: milestones[0].map((t) => Number(t)),
-        unlockPercentages: milestones[1].map((p) => Number(p)),
+        thresholds: milestones[0].map((t: any) => Number(t)),
+        unlockPercentages: milestones[1].map((p: any) => Number(p)),
         reached: milestones[2]
       }
     };
@@ -183,14 +227,20 @@ export async function getVestingSchedule(
   }
 }
 
+/**
+ * @deprecated Use getCreatorVestings from sonicVestingService.ts instead
+ */
 export async function getCreatorVestings(
   creatorAddress: string,
-  provider: ethers.Provider
+  // @ts-ignore: Using any to prevent ethers dependency errors
+  provider: any
 ): Promise<number[]> {
+  console.warn("DEPRECATED: Please use getCreatorVestings from sonicVestingService.ts instead");
   try {
+    // @ts-ignore: Using any to prevent ethers dependency errors
     const vestingContract = new ethers.Contract(SKILL_VESTING_ADDRESS, SkillVestingABI.abi, provider);
     const vestingIds = await vestingContract.getCreatorVestings(creatorAddress);
-    return vestingIds.map((id) => Number(id));
+    return vestingIds.map((id: any) => Number(id));
   } catch (error) {
     console.error('Error getting creator vestings:', error);
     throw error;

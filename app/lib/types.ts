@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { PublicKey } from '@solana/web3.js';
 
 // Token Types
 export interface TokenMetadata {
@@ -9,7 +9,7 @@ export interface TokenMetadata {
 }
 
 export interface TokenDetails {
-  address: string;
+  mintAddress: string;
   name: string;
   symbol: string;
   totalSupply: string;
@@ -29,7 +29,7 @@ export interface MilestoneConfig {
 export interface VestingSchedule {
   id: number;
   creator: string;
-  tokenAddress: string;
+  tokenMintAddress: string;
   totalAmount: string;
   unlockedAmount: string;
   oracleAddress: string;
@@ -59,15 +59,15 @@ export interface SonicBond {
 
 // Trade Types
 export interface TradeInput {
-  tokenAddress: string;
+  tokenMintAddress: string;
   amount: string;
   price: string;
   tradeType: 'buy' | 'sell';
 }
 
 export interface TradeOutput {
-  transactionHash: string;
-  tokenAddress: string;
+  signature: string;
+  tokenMintAddress: string;
   amount: string;
   price: string;
   totalCost: string;
@@ -75,9 +75,9 @@ export interface TradeOutput {
   timestamp: Date;
 }
 
-// Switchboard Oracle Types
+// Solana Oracle Types
 export interface OracleFeed {
-  address: string;
+  publicKey: string;
   name: string;
   description: string;
   metricType: string;

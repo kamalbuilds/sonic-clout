@@ -5,7 +5,6 @@ import { GlassCard } from '../ui/glass-card';
 import { Button } from '../ui/button';
 import { createSPLToken, TokenCreationParams } from '@/app/lib/services/tokenService';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { ethers } from 'ethers';
 import { toast } from 'react-hot-toast';
 import { LoadingCircle } from '../LoadingCircle';
 import { Post } from '@/types';
@@ -21,28 +20,20 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
   onSuccess, 
   onClose 
 }) => {
-  const { publicKey, signTransaction } = useWallet();
+  const wallet = useWallet();
   const [tokenName, setTokenName] = useState(`${post.creator_details.metadata.address.slice(0, 4)}Post`);
   const [tokenSymbol, setTokenSymbol] = useState(`P${post.stream_id.slice(0, 3)}`);
   const [initialSupply, setInitialSupply] = useState(1000000);
   const [isCreating, setIsCreating] = useState(false);
   
   const handleTokenize = async () => {
-    if (!publicKey || !signTransaction) {
+    if (!wallet.publicKey || !wallet.signTransaction) {
       toast.error('Please connect your wallet first');
       return;
     }
     
     try {
       setIsCreating(true);
-      
-      // Create Ethereum provider from Solana wallet (for Sonic SVM)
-      // This is a simplified mock - in reality you'd need to adapt the Solana wallet
-      // for EVM compatibility on Sonic SVM
-      const provider = new ethers.JsonRpcProvider("https://rpc.mainnet-alpha.sonic.game");
-      
-      // Mock signer for demo purposes - in real implementation this would use the Solana wallet
-      const signer = new ethers.Wallet('0x' + Array(64).fill('0').join(''), provider);
       
       const tokenParams: TokenCreationParams = {
         name: tokenName,
@@ -51,11 +42,11 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
         metadata: {
           type: 'post',
           content: post.content.body,
-          creator: publicKey.toBase58()
+          creator: wallet.publicKey.toString()
         }
       };
       
-      const tokenAddress = await createSPLToken(tokenParams, signer);
+      const tokenAddress = await createSPLToken(tokenParams, wallet);
       
       toast.success('Content successfully tokenized!');
       
@@ -117,7 +108,7 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
         
         <div className="bg-white/5 rounded-md p-3">
           <h3 className="text-sm font-semibold mb-2">Tokenization Fee</h3>
-          <p className="text-xs text-white-400">0.5 $SONIC will be charged for tokenization</p>
+          <p className="text-xs text-white-400">0.5 SOL will be charged for tokenization</p>
         </div>
         
         <div className="flex justify-end gap-3">
@@ -131,7 +122,7 @@ export const TokenizeContent: React.FC<TokenizeContentProps> = ({
             variant="glassColored"
             gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
             onClick={handleTokenize}
-            disabled={isCreating}
+            disabled={isCreating || !wallet.connected}
             className="cursor-pointer"
           >
             {isCreating ? (

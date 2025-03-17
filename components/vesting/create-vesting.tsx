@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { GlassCard } from '../ui/glass-card';
 import { Button } from '../ui/button';
-import { createVesting, MilestoneConfig } from '@/app/lib/services/vestingService';
+import { createVesting, MilestoneConfig } from '@/app/lib/services/sonicVestingService';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { ethers } from 'ethers';
+import { PublicKey } from '@solana/web3.js';
 import { toast } from 'react-hot-toast';
 import { LoadingCircle } from '../LoadingCircle';
 
@@ -14,18 +14,18 @@ interface CreateVestingProps {
   onClose: () => void;
 }
 
-// Predefined switchboard oracle addresses for different metrics
+// Predefined oracle addresses for different metrics (Solana public keys)
 const ORACLES = {
-  followers: '0x1234567890123456789012345678901234567890', // Mock address
-  views: '0x2345678901234567890123456789012345678901', // Mock address
-  likes: '0x3456789012345678901234567890123456789012'  // Mock address
+  followers: 'FoLLWr61SZGbdZKFuhrGWiGPuDbPw97FG5cKwxZtBDmi', // Mock address
+  views: 'ViEWSvC8CnpZPCNZKFuhrGWiGPuDbPw97FG5cKwxZtBDvi', // Mock address
+  likes: 'LiKeSvC8CnpZPCNZKFuhrGWiGPuDbPw97FG5cKwxZtBDli'  // Mock address
 };
 
 export const CreateVesting: React.FC<CreateVestingProps> = ({ 
   onSuccess, 
   onClose 
 }) => {
-  const { publicKey, signTransaction } = useWallet();
+  const wallet = useWallet();
   const [tokenAddress, setTokenAddress] = useState('');
   const [amount, setAmount] = useState('1000');
   const [metricType, setMetricType] = useState<'followers' | 'views' | 'likes'>('followers');
@@ -53,8 +53,19 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
   const totalPercentage = milestones.reduce((sum, m) => sum + m.unlockPercentage, 0);
   const isValidPercentage = totalPercentage <= 10000;
   
+  // Validate token address is a valid Solana public key
+  const isValidTokenAddress = () => {
+    try {
+      if (!tokenAddress) return false;
+      new PublicKey(tokenAddress);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+  
   const handleCreateVesting = async () => {
-    if (!publicKey || !signTransaction) {
+    if (!wallet.publicKey || !wallet.signTransaction) {
       toast.error('Please connect your wallet first');
       return;
     }
@@ -64,26 +75,23 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
       return;
     }
     
+    if (!isValidTokenAddress()) {
+      toast.error('Please enter a valid token address');
+      return;
+    }
+    
     try {
       setIsCreating(true);
       
-      // Create Ethereum provider from Solana wallet (for Sonic SVM)
-      // This is a simplified mock - in reality you'd need to adapt the Solana wallet
-      // for EVM compatibility on Sonic SVM
-      const provider = new ethers.JsonRpcProvider("https://rpc.mainnet-alpha.sonic.game");
-      
-      // Mock signer for demo purposes - in real implementation this would use the Solana wallet
-      const signer = new ethers.Wallet('0x' + Array(64).fill('0').join(''), provider);
-      
       const vestingParams = {
-        tokenAddress,
-        amount: ethers.parseUnits(amount, 18).toString(),
+        tokenMintAddress: tokenAddress,
+        amount: parseInt(amount),
         oracleAddress: ORACLES[metricType],
         metricType,
         milestones
       };
       
-      const vestingId = await createVesting(vestingParams, signer);
+      const vestingId = await createVesting(vestingParams, wallet);
       
       toast.success('Vesting schedule created successfully!');
       
@@ -121,9 +129,12 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
             type="text"
             value={tokenAddress}
             onChange={(e) => setTokenAddress(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Token contract address"
+            className={`w-full bg-white/5 border ${!tokenAddress || isValidTokenAddress() ? 'border-white/10' : 'border-red-500'} rounded-md p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            placeholder="Token mint address"
           />
+          {tokenAddress && !isValidTokenAddress() && (
+            <p className="text-xs text-red-500 mt-1">Please enter a valid Solana address</p>
+          )}
         </div>
         
         <div>
@@ -214,7 +225,7 @@ export const CreateVesting: React.FC<CreateVestingProps> = ({
             variant="glassColored"
             gradient="rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5)"
             onClick={handleCreateVesting}
-            disabled={isCreating || !isValidPercentage}
+            disabled={isCreating || !isValidPercentage || !isValidTokenAddress() || !wallet.connected}
             className="cursor-pointer"
           >
             {isCreating ? (
