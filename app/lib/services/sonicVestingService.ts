@@ -7,7 +7,7 @@ import {
   SystemProgram,
   sendAndConfirmTransaction
 } from '@solana/web3.js';
-import { Program, AnchorProvider, web3, BN, Wallet, Idl } from '@coral-xyz/anchor';
+import { Program, AnchorProvider, web3, BN, Wallet, Idl as AnchorIdl } from '@coral-xyz/anchor';
 import { 
   TOKEN_PROGRAM_ID, 
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -15,6 +15,54 @@ import {
   getAssociatedTokenAddressSync
 } from '@solana/spl-token';
 import { Buffer } from 'buffer';
+
+// Define custom IDL type to handle Anchor's format
+interface Idl extends AnchorIdl {
+  accounts: IdlAccount[];
+  instructions: IdlInstruction[];
+  events?: IdlEvent[];
+}
+
+interface IdlAccount {
+  name: string;
+  type: {
+    kind: string;
+    fields: IdlField[];
+  };
+}
+
+interface IdlField {
+  name: string;
+  type: string | { defined?: string, array?: any, vec?: any };
+}
+
+interface IdlInstruction {
+  name: string;
+  accounts: IdlInstructionAccount[];
+  args: IdlInstructionArg[];
+}
+
+interface IdlInstructionAccount {
+  name: string;
+  isMut: boolean;
+  isSigner: boolean;
+}
+
+interface IdlInstructionArg {
+  name: string;
+  type: string | { array?: any, defined?: string, vec?: any };
+}
+
+interface IdlEvent {
+  name: string;
+  fields: IdlEventField[];
+}
+
+interface IdlEventField {
+  name: string;
+  type: string;
+  index: boolean;
+}
 
 // Define interfaces for our Solana program account types
 interface VestingStateAccount {
@@ -233,6 +281,25 @@ export interface VestingSchedule {
 let connectionSingleton: Connection | null = null;
 let programSingleton: Program | null = null;
 
+// Custom extension for Anchor program to add account types
+interface SkillVestingProgram extends Program<Idl> {
+  account: {
+    vestingState: {
+      fetch(address: PublicKey): Promise<VestingStateAccount>;
+    };
+    vestingSchedule: {
+      fetch(address: PublicKey): Promise<VestingScheduleAccount>;
+      all(filters?: any[]): Promise<{
+        publicKey: PublicKey;
+        account: VestingScheduleAccount;
+      }[]>;
+    };
+    creatorVestings: {
+      fetch(address: PublicKey): Promise<CreatorVestingsAccount>;
+    };
+  };
+}
+
 function getConnection(rpcUrl = DEFAULT_NETWORK): Connection {
   if (!connectionSingleton) {
     connectionSingleton = new Connection(rpcUrl, 'confirmed');
@@ -240,7 +307,7 @@ function getConnection(rpcUrl = DEFAULT_NETWORK): Connection {
   return connectionSingleton;
 }
 
-export function getProgram(wallet: any, rpcUrl = DEFAULT_NETWORK): Program {
+export function getProgram(wallet: any, rpcUrl = DEFAULT_NETWORK): SkillVestingProgram {
   if (!programSingleton) {
     const connection = getConnection(rpcUrl);
     const provider = new AnchorProvider(
@@ -250,12 +317,12 @@ export function getProgram(wallet: any, rpcUrl = DEFAULT_NETWORK): Program {
     );
     
     programSingleton = new Program(
-      SKILL_VESTING_IDL,
+      SKILL_VESTING_IDL as unknown as AnchorIdl,
       new PublicKey(SKILL_VESTING_PROGRAM_ID),
       provider
-    );
+    ) as SkillVestingProgram;
   }
-  return programSingleton;
+  return programSingleton as SkillVestingProgram;
 }
 
 /**
@@ -320,7 +387,7 @@ export async function createVesting(
     const [vestingStatePDA] = await getVestingStatePDA(program.programId);
     
     // Fetch the vesting state account
-    const vestingStateAccount = await program.account.vestingState.fetch(vestingStatePDA) as VestingStateAccount;
+    const vestingStateAccount = await program.account.vestingState.fetch(vestingStatePDA);
     
     // Get next vesting ID
     const nextVestingId = vestingStateAccount.vestingIdCounter.addn(1);
@@ -401,7 +468,7 @@ export async function checkMilestones(
     
     // Fetch all vesting schedules belonging to the user
     const [creatorVestingsPDA] = await getCreatorVestingsPDA(wallet.publicKey, program.programId);
-    const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA) as CreatorVestingsAccount;
+    const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA);
     
     // Get vesting schedule public key from ID - this is simplified
     // In a real implementation, you would use the vestingId to query the correct account
@@ -473,7 +540,7 @@ export async function withdrawUnlocked(
     }
     
     const vestingScheduleAccount = vestingScheduleAccounts[0];
-    const vestingSchedule = vestingScheduleAccount.account as VestingScheduleAccount;
+    const vestingSchedule = vestingScheduleAccount.account;
     
     // Derive the token vault PDA
     const [tokenVault] = await PublicKey.findProgramAddress(
@@ -557,7 +624,7 @@ export async function getVestingSchedule(
       throw new Error(`Vesting schedule with ID ${vestingId} not found`);
     }
     
-    const vestingScheduleAccount = vestingScheduleAccounts[0].account as VestingScheduleAccount;
+    const vestingScheduleAccount = vestingScheduleAccounts[0].account;
     
     // Format the milestone data
     const thresholds = vestingScheduleAccount.milestones.map((m) => m.threshold.toNumber());
@@ -600,7 +667,7 @@ export async function getCreatorVestings(
     const [creatorVestingsPDA] = await getCreatorVestingsPDA(creatorPublicKey, program.programId);
     
     try {
-      const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA) as CreatorVestingsAccount;
+      const creatorVestings = await program.account.creatorVestings.fetch(creatorVestingsPDA);
       return creatorVestings.vestingIds.map((id) => id.toNumber());
     } catch (e) {
       // If the account doesn't exist, return an empty array

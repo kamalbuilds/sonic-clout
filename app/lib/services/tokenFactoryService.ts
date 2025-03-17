@@ -1,10 +1,75 @@
 import { Connection, PublicKey, Keypair, SystemProgram } from '@solana/web3.js';
-import { Program, AnchorProvider, web3, BN, Wallet, Idl } from '@coral-xyz/anchor';
+import { Program, AnchorProvider, web3, BN, Wallet, Idl as AnchorIdl } from '@coral-xyz/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { TokenMetadata } from './tokenService';
 
+// Define custom IDL type to handle Anchor's format
+interface Idl extends AnchorIdl {
+  accounts: IdlAccount[];
+  instructions: IdlInstruction[];
+  events?: IdlEvent[];
+}
+
+interface IdlAccount {
+  name: string;
+  type: {
+    kind: string;
+    fields: IdlField[];
+  };
+}
+
+interface IdlField {
+  name: string;
+  type: string | { defined?: string, array?: any, vec?: any };
+}
+
+interface IdlInstruction {
+  name: string;
+  accounts: IdlInstructionAccount[];
+  args: IdlInstructionArg[];
+}
+
+interface IdlInstructionAccount {
+  name: string;
+  isMut: boolean;
+  isSigner: boolean;
+}
+
+interface IdlInstructionArg {
+  name: string;
+  type: string | { array?: any, defined?: string, vec?: any };
+}
+
+interface IdlEvent {
+  name: string;
+  fields: IdlEventField[];
+}
+
+interface IdlEventField {
+  name: string;
+  type: string;
+  index: boolean;
+}
+
 // This would be imported from the build output in a real app
 // import tokenFactoryIdl from '../../../sonic-anchor/target/idl/token_factory.json';
+
+// Define interfaces for our Solana program account types
+interface FactoryStateAccount {
+  authority: PublicKey;
+  tokenCounter: BN;
+  mintFee: BN;
+  feeReceiver: PublicKey;
+}
+
+interface TokenMetadataAccount {
+  name: string;
+  symbol: string;
+  contentType: string;
+  contentHash: string;
+  creator: PublicKey;
+  creationTime: BN;
+}
 
 // Mock IDL for development
 const tokenFactoryIdl: Idl = {
@@ -111,6 +176,18 @@ export interface TokenCreationResult {
   tokenId: number;
 }
 
+// Custom extension for Anchor program to add account types
+interface TokenFactoryProgram extends Program<Idl> {
+  account: {
+    factoryState: {
+      fetch(address: PublicKey): Promise<FactoryStateAccount>;
+    };
+    tokenMetadata: {
+      fetch(address: PublicKey): Promise<TokenMetadataAccount>;
+    };
+  };
+}
+
 export async function initializeTokenFactory(
   connection: Connection,
   wallet: Wallet,
@@ -124,7 +201,11 @@ export async function initializeTokenFactory(
       { commitment: 'confirmed' }
     );
     
-    const program = new Program(tokenFactoryIdl, TOKEN_FACTORY_PROGRAM_ID, provider);
+    const program = new Program(
+      tokenFactoryIdl as unknown as AnchorIdl,
+      TOKEN_FACTORY_PROGRAM_ID,
+      provider
+    ) as TokenFactoryProgram;
     
     // Generate a new keypair for the factory state account
     const factoryState = web3.Keypair.generate();
@@ -169,7 +250,11 @@ export async function createToken(
       { commitment: 'confirmed' }
     );
     
-    const program = new Program(tokenFactoryIdl, TOKEN_FACTORY_PROGRAM_ID, provider);
+    const program = new Program(
+      tokenFactoryIdl as unknown as AnchorIdl,
+      TOKEN_FACTORY_PROGRAM_ID,
+      provider
+    ) as TokenFactoryProgram;
     
     // Generate keypairs for the accounts
     const mint = web3.Keypair.generate();
@@ -183,7 +268,7 @@ export async function createToken(
     
     // Get the fee receiver from the factory state
     const factoryStateAccount = await program.account.factoryState.fetch(FACTORY_STATE);
-    const feeReceiver = factoryStateAccount.feeReceiver as PublicKey;
+    const feeReceiver = factoryStateAccount.feeReceiver;
     
     // In a real implementation, we would create an associated token account
     // For this demo, we'll just use a dummy address
@@ -230,27 +315,46 @@ export async function createToken(
   }
 }
 
+// Create a dummy wallet type for read-only operations
+class ReadOnlyWallet implements Wallet {
+  constructor(readonly publicKey: PublicKey) {}
+  
+  async signTransaction(): Promise<any> {
+    throw new Error('ReadOnlyWallet cannot sign transactions');
+  }
+  
+  async signAllTransactions(): Promise<any[]> {
+    throw new Error('ReadOnlyWallet cannot sign transactions');
+  }
+}
+
 export async function getTokenMetadata(
   connection: Connection,
   metadataAddress: PublicKey
 ): Promise<TokenMetadata> {
   try {
+    // Create a read-only wallet with default public key for provider
+    const readOnlyWallet = new ReadOnlyWallet(PublicKey.default);
+    
     const provider = new AnchorProvider(
       connection,
-      // We don't need a real wallet for this read-only operation
-      { publicKey: PublicKey.default } as Wallet,
+      readOnlyWallet,
       { commitment: 'confirmed' }
     );
     
-    const program = new Program(tokenFactoryIdl, TOKEN_FACTORY_PROGRAM_ID, provider);
+    const program = new Program(
+      tokenFactoryIdl as unknown as AnchorIdl,
+      TOKEN_FACTORY_PROGRAM_ID,
+      provider
+    ) as TokenFactoryProgram;
     
     const rawMetadata = await program.account.tokenMetadata.fetch(metadataAddress);
-    const contentType = rawMetadata.contentType as string;
-    const contentHash = rawMetadata.contentHash as string;
-    const creator = (rawMetadata.creator as PublicKey).toString();
+    const contentType = rawMetadata.contentType;
+    const contentHash = rawMetadata.contentHash;
+    const creator = rawMetadata.creator.toString();
     
     return {
-      name: rawMetadata.name as string,
+      name: rawMetadata.name,
       description: `${contentType} content`,
       image: `https://gateway.pinata.cloud/ipfs/${contentHash}`,
       properties: {

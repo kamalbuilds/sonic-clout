@@ -1,0 +1,148 @@
+{
+  "version": "0.1.0",
+  "name": "skill_vesting",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        { "name": "vestingState", "isMut": true, "isSigner": true },
+        { "name": "authority", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "createVesting",
+      "accounts": [
+        { "name": "vestingState", "isMut": true, "isSigner": false },
+        { "name": "vestingSchedule", "isMut": true, "isSigner": true },
+        { "name": "creatorVestings", "isMut": true, "isSigner": false },
+        { "name": "tokenMint", "isMut": false, "isSigner": false },
+        { "name": "tokenFrom", "isMut": true, "isSigner": false },
+        { "name": "tokenVault", "isMut": true, "isSigner": false },
+        { "name": "tokenVaultAuthority", "isMut": false, "isSigner": false },
+        { "name": "oracle", "isMut": false, "isSigner": false },
+        { "name": "creator", "isMut": true, "isSigner": true },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false },
+        { "name": "rent", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "amount", "type": "u64" },
+        { "name": "metricType", "type": "string" },
+        { "name": "thresholds", "type": { "vec": "u64" } },
+        { "name": "unlockPercentages", "type": { "vec": "u64" } }
+      ]
+    },
+    {
+      "name": "checkMilestones",
+      "accounts": [
+        { "name": "vestingSchedule", "isMut": true, "isSigner": false },
+        { "name": "oracle", "isMut": false, "isSigner": false },
+        { "name": "signer", "isMut": false, "isSigner": true }
+      ],
+      "args": []
+    },
+    {
+      "name": "withdrawUnlocked",
+      "accounts": [
+        { "name": "vestingSchedule", "isMut": true, "isSigner": false },
+        { "name": "tokenVault", "isMut": true, "isSigner": false },
+        { "name": "tokenVaultAuthority", "isMut": false, "isSigner": false },
+        { "name": "tokenTo", "isMut": true, "isSigner": false },
+        { "name": "oracle", "isMut": false, "isSigner": false },
+        { "name": "creator", "isMut": true, "isSigner": true },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "vestingState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "publicKey" },
+          { "name": "vestingIdCounter", "type": "u64" }
+        ]
+      }
+    },
+    {
+      "name": "vestingSchedule",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "creator", "type": "publicKey" },
+          { "name": "tokenMint", "type": "publicKey" },
+          { "name": "totalAmount", "type": "u64" },
+          { "name": "unlockedAmount", "type": "u64" },
+          { "name": "oracleAddress", "type": "publicKey" },
+          { "name": "metricType", "type": "string" },
+          { "name": "active", "type": "bool" },
+          { "name": "vestingId", "type": "u64" },
+          { "name": "milestones", "type": { "vec": { "defined": "Milestone" } } }
+        ]
+      }
+    },
+    {
+      "name": "creatorVestings",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "creator", "type": "publicKey" },
+          { "name": "vestingIds", "type": { "vec": "u64" } }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Milestone",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "threshold", "type": "u64" },
+          { "name": "unlockPercentage", "type": "u64" },
+          { "name": "reached", "type": "bool" }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "VestingCreatedEvent",
+      "fields": [
+        { "name": "vestingId", "type": "u64", "index": false },
+        { "name": "creator", "type": "publicKey", "index": false },
+        { "name": "tokenAddress", "type": "publicKey", "index": false },
+        { "name": "totalAmount", "type": "u64", "index": false }
+      ]
+    },
+    {
+      "name": "MilestoneReachedEvent",
+      "fields": [
+        { "name": "vestingId", "type": "u64", "index": false },
+        { "name": "milestoneIndex", "type": "u64", "index": false },
+        { "name": "unlockedAmount", "type": "u64", "index": false }
+      ]
+    },
+    {
+      "name": "TokensWithdrawnEvent",
+      "fields": [
+        { "name": "vestingId", "type": "u64", "index": false },
+        { "name": "creator", "type": "publicKey", "index": false },
+        { "name": "amount", "type": "u64", "index": false }
+      ]
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "ArrayLengthMismatch", "msg": "Arrays must be the same length" },
+    { "code": 6001, "name": "NoMilestones", "msg": "Must have at least one milestone" },
+    { "code": 6002, "name": "TotalPercentageExceeded", "msg": "Total percentage cannot exceed 100%" },
+    { "code": 6003, "name": "VestingNotActive", "msg": "Vesting schedule not active" },
+    { "code": 6004, "name": "NoNewMilestonesReached", "msg": "No new milestones reached" },
+    { "code": 6005, "name": "OnlyCreatorCanWithdraw", "msg": "Only creator can withdraw" },
+    { "code": 6006, "name": "NoTokensToWithdraw", "msg": "No tokens to withdraw" }
+  ]
+} 

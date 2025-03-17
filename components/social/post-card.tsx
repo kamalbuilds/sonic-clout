@@ -157,10 +157,18 @@ export const PostCard: React.FC<PostCardProps> = ({
           <div className="w-full max-w-md">
             <TokenizeContent 
               post={{
-                content: { body: content },
-                creator_details: { metadata: { address: author.address } },
+                content: { body: content, title: "", context: "", media: [] },
+                creator_details: { 
+                  metadata: { address: author.address, chain: "sonic", ensName: null },
+                  did: `did:sonic:${author.address}`,
+                  profile: {
+                    pfp: author.avatar || ""
+                  },
+                  stream_id: `creator-${author.address}`,
+                  encrypted_email: null
+                },
                 stream_id: Math.random().toString(36).substring(2, 15)
-              }}
+              } as any}
               onSuccess={handleTokenizeSuccess}
               onClose={() => setShowTokenizeModal(false)}
             />
