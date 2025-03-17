@@ -195,4 +195,4 @@ contract SkillVesting is Ownable {
     function getCreatorVestings(address creator) external view returns (uint256[] memory) {
         return creatorVestings[creator];
     }
-} 
+}

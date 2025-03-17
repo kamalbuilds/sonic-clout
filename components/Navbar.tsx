@@ -1,6 +1,7 @@
 import React from 'react';
 import { WalletButton } from "@/components/wallet/wallet-connect-button";
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Navbar = () => {
     return (
@@ -20,6 +21,10 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center gap-6">
                     <Link href="/" className="text-white-300 hover:text-white transition-colors">
                         Home
+                    </Link>
+                    <Link href="/sega" className="text-white-300 hover:text-white transition-colors flex items-center">
+                        <Image src="/sega-logo.svg" width={16} height={16} alt="SEGA" className="mr-1" />
+                        SEGA
                     </Link>
                     <Link href="/bonds" className="text-white-300 hover:text-white transition-colors">
                         Bonds

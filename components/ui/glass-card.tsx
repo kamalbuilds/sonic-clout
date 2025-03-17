@@ -74,3 +74,5 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
 GlassCard.displayName = "GlassCard";
 
 export { GlassCard, glassCardVariants }; 
+
+export { GlassCard, glassCardVariants }; 

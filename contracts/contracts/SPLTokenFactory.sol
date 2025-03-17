@@ -108,4 +108,4 @@ contract SPLTokenFactory is Ownable {
     function getTokenCount() external view returns (uint256) {
         return _tokenCounter;
     }
-} 
+}
