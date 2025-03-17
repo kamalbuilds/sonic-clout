@@ -77,7 +77,7 @@ export interface VestingSchedule {
 
 // Program constants
 const SKILL_VESTING_PROGRAM_ID = new PublicKey('SkLvStvncgAwXjKWnNVEF7MWZXkAF1MJ6Wkdynds8nqN');
-const DEFAULT_NETWORK = 'https://api.devnet.solana.com';
+const DEFAULT_NETWORK = process.env.NEXT_PUBLIC_SONIC_RPC_URL || 'https://api.testnet.sonic.game';
 
 // Use require instead of import to avoid TypeScript issues with the IDL
 // In a production environment, you would use proper type definitions

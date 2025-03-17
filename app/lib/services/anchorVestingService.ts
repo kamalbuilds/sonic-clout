@@ -3,8 +3,6 @@ import { Program, AnchorProvider, web3, BN, Wallet } from '@coral-xyz/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { MilestoneConfig } from './vestingService';
 
-// We'll use a simpler approach with any types to make TypeScript happy
-// In a production environment, you would define more precise types
 
 // Program ID from Anchor.toml
 const SKILL_VESTING_PROGRAM_ID = new PublicKey('SkLvStvncgAwXjKWnNVEF7MWZXkAF1MJ6Wkdynds8nqN');

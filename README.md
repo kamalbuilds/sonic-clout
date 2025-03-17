@@ -2,7 +2,11 @@
 
 > Attention Amplified, Value Tokenized.
 
-SonicClout is a Sonic SVM-native social platform where gaming communities, crypto traders, and content creators tokenize attention and virality. Built using Sonic SVM's high-speed infrastructure, Orb SDK for social primitives, and Agent Kit for automation.
+SonicClout is a Sonic SVM-native social platform where gaming communities, crypto traders, and content creators tokenize attention and virality. 
+
+Built using Sonic SVM's high-speed infrastructure, Orb SDK for social primitives, and Agent Kit for automation.
+
+- Docs -> https://cryptoinnovators.gitbook.io/sonic-clout
 
 ## Features
 
@@ -10,6 +14,10 @@ SonicClout is a Sonic SVM-native social platform where gaming communities, crypt
 - **Clip/Post-to-Token Engine**: Mint SPL tokens tied to gameplay clips or trending posts.
 - **Skill Vesting**: KOLs earn $SONIC as content hits view/follower milestones (via Switchboard oracles).
 - **Sonic Bonds**: Trade bonds pegged to in-game metrics or social trends.
+
+## Demo Video
+
+## Program-IDs
 
 ## Tech Stack
 
@@ -31,8 +39,8 @@ SonicClout is a Sonic SVM-native social platform where gaming communities, crypt
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/sonicclout.git
-   cd sonicclout
+   git clone https://github.com/kamalbuilds/sonic-clout.git
+   cd sonic-clout
    ```
 
 2. Install dependencies:
@@ -86,8 +94,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- Solana Foundation
-- Sonic SVM Team
+- Sonic SVM
 - Orb SDK
-- Jupiter DEX
+- Sega Dex Integrated
 - Switchboard Oracles 
