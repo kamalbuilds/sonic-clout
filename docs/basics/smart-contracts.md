@@ -1,14 +1,23 @@
 ---
-description: Technical overview of SonicClout's Anchor programs
+description: Technical overview of SonicClout's Sonic-powered Anchor programs
 ---
 
 # Smart Contracts
 
-SonicClout is built on a foundation of Solana-based smart contracts written using the Anchor framework. This documentation provides a technical overview of the contracts that power the platform's core functionality.
+SonicClout is built on a foundation of Sonic-powered smart contracts written using the Anchor framework. This documentation provides a technical overview of the contracts that power the platform's core functionality on the Sonic chain extension for Solana.
+
+## Sonic Chain Architecture
+
+Before diving into the specific contracts, it's helpful to understand Sonic's architecture:
+
+- **Sonic SVM (Solana Virtual Machine)** - A chain extension running the Solana VM
+- **HyperGrid Framework** - Enables interoperability with Solana Layer 1
+- **Native Solana Compatibility** - Supports Solana's programming model while adding extensibility
+- **High Performance** - Higher throughput and lower fees than base Solana
 
 ## Anchor Programs Overview
 
-SonicClout utilizes several Anchor programs deployed on the Solana blockchain:
+SonicClout utilizes several Anchor programs deployed on the Sonic chain:
 
 1. **Token Factory** - Creates and manages content tokens
 2. **Skill Vesting** - Handles milestone-based token vesting
@@ -200,6 +209,7 @@ The SEGA protocol powers the trading infrastructure for content tokens.
 - Concentrated liquidity similar to Uniswap v3
 - Multi-token swap routes
 - Custom fee tiers
+- Utilizes Sonic's high-throughput infrastructure
 
 ## Contract Security
 
@@ -210,6 +220,7 @@ SonicClout's contracts implement several security measures:
 - **Re-entrancy Guards** - Protection against re-entrancy attacks
 - **Oracle Validation** - Verification of external data sources
 - **Emergency Shutdown** - Circuit breakers for critical issues
+- **Sonic Security Features** - Benefits from Sonic chain's additional security layers
 
 ## Development and Deployment
 
@@ -218,6 +229,7 @@ SonicClout's contracts implement several security measures:
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation)
+- [Sonic SDK](https://docs.sonic.game/developers/developer-tooling/additional-tools-and-examples)
 
 ### Building the Programs
 
@@ -246,18 +258,18 @@ anchor test -- -t skill_vesting
 ### Deployment
 
 ```bash
-# Deploy to devnet
-anchor deploy --provider.cluster devnet
+# Deploy to Sonic devnet
+anchor deploy --provider.cluster sonic-devnet
 
-# Deploy to mainnet
-anchor deploy --provider.cluster mainnet
+# Deploy to Sonic mainnet
+anchor deploy --provider.cluster sonic-mainnet
 ```
 
 ## Program Addresses
 
-- **Token Factory**: `SPLEZkhJTqLPgAB4wDUMTVnPTyCBTCUULYAjK6SxEKib`
-- **Skill Vesting**: `SkLvStvncgAwXjKWnNVEF7MWZXkAF1MJ6Wkdynds8nqN`
-- **SEGA Protocol**: `SEGAZQg4iFgkMq3H5WFz3HPLGbJTp1FQUhrF3EQgga9`
+- **Token Factory**: `SNICZkhJTqLPgAB4wDUMTVnPTyCBTCUULYAjK6SxEKib`
+- **Skill Vesting**: `SNICvStvncgAwXjKWnNVEF7MWZXkAF1MJ6Wkdynds8nqN`
+- **SEGA Protocol**: `SNICZQg4iFgkMq3H5WFz3HPLGbJTp1FQUhrF3EQgga9`
 
 ## Integration with Frontend
 
@@ -267,7 +279,17 @@ The SonicClout frontend interacts with these contracts through service files:
 - `app/lib/services/sonicVestingService.ts`
 - `app/lib/services/segaService.ts`
 
-These services provide a high-level API for interacting with the Anchor programs.
+These services provide a high-level API for interacting with the Anchor programs deployed on Sonic.
+
+## Sonic Developer Tools
+
+Developers looking to extend SonicClout can utilize Sonic's developer tooling:
+
+- **Sonic CLI** - Command-line tools for Sonic development
+- **Sonic Explorer** - Block explorer for transaction monitoring
+- **Metaplex Integration** - For NFT functionality on Sonic
+- **Pyth Oracle** - Price feeds directly on Sonic
+- **SolanaFM** - Analytics for Sonic chain data
 
 ## Next Steps
 

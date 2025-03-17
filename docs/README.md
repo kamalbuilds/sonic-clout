@@ -20,7 +20,7 @@ layout:
 
 # Welcome to SonicClout
 
-SonicClout is a decentralized social content platform built on Solana, enabling creators to tokenize and monetize their content through smart contracts. Our platform combines social engagement with DeFi features like token vesting and liquidity pools.
+SonicClout is a decentralized social content platform built on Sonic, the first chain extension on Solana, enabling creators to tokenize and monetize their content through smart contracts. Our platform combines social engagement with DeFi features like token vesting and liquidity pools, leveraging Sonic's HyperGrid Framework for superior performance.
 
 ## Key Features
 
@@ -28,15 +28,30 @@ SonicClout is a decentralized social content platform built on Solana, enabling 
 * **Skill-Based Vesting** - Unlock tokens based on social metrics and engagement
 * **SEGA Trading Protocol** - Trade tokens with low fees and high liquidity
 * **Bonds and Derivatives** - Speculate on future creator success
+* **Lightning Speed** - Benefit from Sonic's high-throughput infrastructure
 
 ## Platform Architecture
 
-SonicClout combines a modern NextJS frontend with Solana-based smart contracts:
+SonicClout combines a modern NextJS frontend with Sonic-powered smart contracts:
 
 * React-based web application with NextJS
-* Anchor programs for Solana blockchain integration
+* Anchor programs deployed on Sonic SVM (Solana Virtual Machine)
+* HyperGrid interoperability with Solana Layer 1
 * Context-based state management for blockchain interactions
 * Modern UI components with responsive design
+
+## Business Vision
+
+SonicClout aims to revolutionize the creator economy by providing innovative tokenization solutions that bridge social media engagement with decentralized finance. Our comprehensive [Business Plan](business-plan.md) outlines our strategy for capturing the growing creator economy market, estimated at over $100 billion globally.
+
+## Development Timeline
+
+We have an ambitious but achievable plan for bringing SonicClout to market. Our [Development Roadmap](roadmap.md) outlines our four-phase approach:
+
+1. **Foundation** (Q2-Q3 2024) - Core platform development
+2. **Growth** (Q4 2024 - Q2 2025) - Enhanced features and user scaling
+3. **Expansion** (Q3 2025 - Q2 2026) - Advanced products and market expansion
+4. **Maturity** (Q3 2026 onwards) - Full financial ecosystem and governance
 
 ### Jump right in
 

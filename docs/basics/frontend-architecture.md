@@ -1,10 +1,10 @@
 ---
-description: Technical overview of SonicClout's frontend architecture
+description: Technical overview of SonicClout's frontend architecture with Sonic integration
 ---
 
 # Frontend Architecture
 
-SonicClout's frontend is built with modern web technologies, focusing on performance, user experience, and seamless blockchain integration. This documentation outlines the technical architecture, key components, and design patterns used in the application.
+SonicClout's frontend is built with modern web technologies, focusing on performance, user experience, and seamless integration with the Sonic blockchain. This documentation outlines the technical architecture, key components, and design patterns used in the application.
 
 ## Technology Stack
 
@@ -14,8 +14,9 @@ The SonicClout frontend uses:
 - **TypeScript** - For type safety and better developer experience
 - **TailwindCSS** - For styling and responsive design
 - **React Context API** - For state management
-- **Solana Web3.js** - For Solana blockchain interaction
-- **Wallet Adapter** - For wallet connections
+- **Sonic SDK** - For Sonic blockchain interaction
+- **Solana Web3.js** - For base Solana compatibility
+- **Wallet Adapter** - Modified for Sonic wallet connections
 - **ShadcnUI** - For UI components with a custom theme
 
 ## Application Structure
@@ -73,8 +74,8 @@ export interface GlobalContextType {
 ```typescript
 // context/NetworkContext.tsx
 export interface NetworkContextType {
-  network: 'mainnet' | 'devnet';
-  setNetwork: (network: 'mainnet' | 'devnet') => void;
+  network: 'sonic-mainnet' | 'sonic-devnet' | 'solana-mainnet' | 'solana-devnet';
+  setNetwork: (network: 'sonic-mainnet' | 'sonic-devnet' | 'solana-mainnet' | 'solana-devnet') => void;
 }
 ```
 
@@ -126,9 +127,10 @@ SonicClout's UI is built with reusable components:
 
 #### Wallet Integration
 
-- `WalletConnectButton.tsx` - Button for connecting wallets
+- `WalletConnectButton.tsx` - Button for connecting Sonic-compatible wallets
 - `WalletModal.tsx` - Modal for selecting wallet providers
 - `WalletDetails.tsx` - Component displaying wallet info
+- `NetworkSelector.tsx` - Switch between Sonic and Solana networks
 
 #### Trading Interface
 
@@ -156,35 +158,52 @@ SonicClout uses a hybrid state management approach:
 
 ### Wallet Connection
 
-Wallet connection is handled through the Solana Wallet Adapter:
+Wallet connection is handled through a modified Solana Wallet Adapter for Sonic:
 
 ```typescript
 // app/Providers.tsx
 export function Providers({ children }: { children: ReactNode }) {
   const wallets = useMemo(
     () => [
+      new BackpackWalletAdapter(),
+      new OKXWalletAdapter(),
+      new NightlyWalletAdapter(),
+      new BytbitWalletAdapter(),
+      // Legacy Solana wallets with limited Sonic support
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new BackpackWalletAdapter(),
-      new GlowWalletAdapter(),
     ],
     []
   );
 
   return (
     <WalletProvider wallets={wallets} autoConnect>
-      <ConnectionProvider endpoint={endpoint}>
+      <ConnectionProvider endpoint={getSonicEndpoint()}>
         {/* Other providers */}
         {children}
       </ConnectionProvider>
     </WalletProvider>
   );
 }
+
+// Helper function to get appropriate endpoint
+function getSonicEndpoint() {
+  const network = localStorage.getItem('network') || 'sonic-mainnet';
+  
+  const endpoints = {
+    'sonic-mainnet': 'https://mainnet.sonic.game/rpc',
+    'sonic-devnet': 'https://devnet.sonic.game/rpc',
+    'solana-mainnet': 'https://api.mainnet-beta.solana.com',
+    'solana-devnet': 'https://api.devnet.solana.com',
+  };
+  
+  return endpoints[network];
+}
 ```
 
 ### Service Layer
 
-The app uses service classes to interact with smart contracts:
+The app uses service classes to interact with smart contracts on Sonic:
 
 ```typescript
 // app/lib/services/sonicVestingService.ts
@@ -193,7 +212,7 @@ export async function createVesting(
   wallet: WalletContextState,
   params: VestingParams
 ): Promise<number> {
-  // Implementation
+  // Implementation for Sonic chain
 }
 
 // app/lib/services/tokenFactoryService.ts
@@ -202,7 +221,7 @@ export async function createToken(
   wallet: WalletContextState,
   params: TokenParams
 ): Promise<string> {
-  // Implementation
+  // Implementation for Sonic chain
 }
 ```
 
@@ -249,6 +268,50 @@ const Button = React.forwardRef<
 });
 ```
 
+## Sonic-Specific Integrations
+
+### Sonic SDK Integration
+
+The application integrates with Sonic's SDK for blockchain interaction:
+
+```typescript
+// lib/sonic.ts
+import { SonicConnection } from '@sonic-game/web3.js';
+import { createSonicTransaction } from '@sonic-game/transactions';
+
+export function initializeSonicConnection(endpoint: string): SonicConnection {
+  return new SonicConnection(endpoint, {
+    commitment: 'confirmed',
+    confirmTransactionInitialTimeout: 60000,
+  });
+}
+
+export async function executeSonicTransaction(
+  connection: SonicConnection,
+  transaction: Transaction,
+  signers: Keypair[]
+): Promise<string> {
+  const sonicTx = await createSonicTransaction(transaction);
+  // Process on Sonic chain...
+}
+```
+
+### Metaplex Integration
+
+For NFT functionality on Sonic:
+
+```typescript
+// lib/metaplex.ts
+import { Metaplex } from '@metaplex-foundation/js';
+import { sonicCluster } from '@sonic-game/web3.js';
+
+export function createMetaplex(connection: Connection, wallet: Wallet): Metaplex {
+  return Metaplex.make(connection)
+    .use(walletAdapterIdentity(wallet))
+    .use(sonicCluster());
+}
+```
+
 ## Performance Optimizations
 
 SonicClout implements several performance optimizations:
@@ -258,6 +321,7 @@ SonicClout implements several performance optimizations:
 3. **Server Components** - For improved initial load time
 4. **Memoization** - Using React.memo and useMemo for expensive calculations
 5. **Virtualization** - For long lists using react-window
+6. **Sonic RPC Optimizations** - Leveraging Sonic's high-throughput infrastructure
 
 ## Responsive Design
 
@@ -289,8 +353,8 @@ yarn dev
 Create a `.env.local` file with:
 
 ```
-NEXT_PUBLIC_RPC_ENDPOINT=https://api.mainnet-beta.solana.com
-NEXT_PUBLIC_DEFAULT_NETWORK=mainnet
+NEXT_PUBLIC_SONIC_RPC_ENDPOINT=https://mainnet.sonic.game/rpc
+NEXT_PUBLIC_DEFAULT_NETWORK=sonic-mainnet
 ```
 
 ## Testing Strategy
@@ -301,6 +365,7 @@ SonicClout employs several testing strategies:
 2. **Component Tests** - Using React Testing Library
 3. **Integration Tests** - For complex component interactions
 4. **End-to-End Tests** - Using Cypress for critical user flows
+5. **Sonic-specific Tests** - Ensure compatibility with Sonic chain
 
 ## Deployment
 

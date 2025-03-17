@@ -1,6 +1,8 @@
 # Table of contents
 
 * [Welcome to SonicClout](README.md)
+* [Business Plan](business-plan.md)
+* [Development Roadmap](roadmap.md)
 
 ## Getting Started
 
