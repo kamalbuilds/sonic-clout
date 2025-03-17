@@ -4,6 +4,7 @@ import { UserProfile } from '@/types/profile';
 import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 import { pinata } from '@/config/pinata';
 import { Button } from '@/components/ui/button';
+// @ts-ignore
 import { useOrbis } from '@orbisclub/components';
 
 interface ProfileHeaderProps {

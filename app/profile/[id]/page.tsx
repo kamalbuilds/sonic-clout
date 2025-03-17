@@ -3,6 +3,7 @@
 import { ProfileDetails } from '@/components/profile/ProfileDetails';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { UserProfile } from '@/types/profile';
+// @ts-ignore
 import { useOrbis } from '@orbisclub/components';
 import React, { useEffect, useState } from 'react';
 import { LoadingCircle } from '@/components/LoadingCircle';

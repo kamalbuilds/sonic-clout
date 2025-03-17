@@ -8,6 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+// @ts-ignore
 import { useOrbis } from '@orbisclub/components';
 import { pinata } from '@/config/pinata';
 import { Button } from '../ui/button';

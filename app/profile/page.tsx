@@ -5,6 +5,7 @@ import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { Button } from '@/components/ui/button';
 import { WalletButton } from '@/components/wallet/wallet-connect-button';
 import { UserProfile } from '@/types/profile';
+// @ts-ignore
 import { useOrbis } from '@orbisclub/components';
 import React from 'react';
 
