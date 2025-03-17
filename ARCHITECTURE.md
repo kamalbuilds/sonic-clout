@@ -162,7 +162,7 @@ Utilities to help with migration:
 ## Deployment
 
 The Solana programs are deployed to:
-- Devnet for testing: https://api.devnet.solana.com
-- Mainnet (pending): https://api.mainnet-beta.solana.com
+- Devnet for testing: https://api.testnet.sonic.game
+- Mainnet (pending): https://api.mainnet.sonic.game
 
 Frontend deployment uses Vercel for hosting the Next.js application. 
