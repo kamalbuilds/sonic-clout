@@ -1,4 +1,4 @@
-# SonicClout - A Sonic SVM-Powered SocialFi Platform
+ # SonicClout - A Sonic SVM-Powered SocialFi Platform
 
 > Attention Amplified, Value Tokenized.
 
@@ -22,7 +22,9 @@ https://www.youtube.com/watch?v=pKfJja25hm8
 ## Sonic Program-IDs
 
 token_factory = "G14sAxWFrgGzsVMjPd8SttQniQ966RzYPRY5QYGYSUp"
+
 skill_vesting = "285YigWq8Sy2nqFwVfVFJyoMFjhCvSXLwfNwyEpFufBR"
+
 sonic_bonds = "7HVxrfcxieWsDWtnn2MmcrLCjxFit821NkNPijzT9UF8"
 
 ## Tech Stack
